@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -17,6 +17,8 @@
  */
 
 package org.ejml.data;
+
+import org.ejml.ops.ComplexMath64F;
 
 import java.io.Serializable;
 
@@ -67,6 +69,11 @@ public class Complex64F implements Serializable {
         this.imaginary = imaginary;
     }
 
+    public void set(Complex64F a) {
+        this.real = a.real;
+        this.imaginary = a.imaginary;
+    }
+
     public boolean isReal() {
         return imaginary == 0.0;
     }
@@ -77,5 +84,29 @@ public class Complex64F implements Serializable {
         } else {
             return real+" "+imaginary+"i";
         }
+    }
+
+    public Complex64F plus( Complex64F a ) {
+        Complex64F ret = new Complex64F();
+        ComplexMath64F.plus(this,a,ret);
+        return ret;
+    }
+
+    public Complex64F minus( Complex64F a ) {
+        Complex64F ret = new Complex64F();
+        ComplexMath64F.minus(this, a, ret);
+        return ret;
+    }
+
+    public Complex64F times( Complex64F a ) {
+        Complex64F ret = new Complex64F();
+        ComplexMath64F.multiply(this,a,ret);
+        return ret;
+    }
+
+    public Complex64F divide( Complex64F a ) {
+        Complex64F ret = new Complex64F();
+        ComplexMath64F.divide(this,a,ret);
+        return ret;
     }
 }

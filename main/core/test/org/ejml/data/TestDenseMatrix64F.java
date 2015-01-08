@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  */
 public class TestDenseMatrix64F {
 
-	Random rand = new Random(23432);
+    Random rand = new Random(23432);
 
     @Test
     public void testGeneric() {
@@ -164,37 +164,37 @@ public class TestDenseMatrix64F {
         EjmlUnitTests.assertEquals(mat,mat2,1e-10);
     }
 
-	@Test
-	public void set_ColumnMajor() {
-		DenseMatrix64F A = RandomMatrices.createRandom(3,5,rand);
+    @Test
+    public void set_ColumnMajor() {
+        DenseMatrix64F A = RandomMatrices.createRandom(3,5,rand);
 
-		DenseMatrix64F Atran = A.copy();
-		CommonOps.transpose(Atran);
-		DenseMatrix64F Afound = new DenseMatrix64F(3,5);
-		Afound.set(3,5, false, Atran.data);
+        DenseMatrix64F Atran = A.copy();
+        CommonOps.transpose(Atran);
+        DenseMatrix64F Afound = new DenseMatrix64F(3,5);
+        Afound.set(3,5, false, Atran.data);
 
-		assertTrue(MatrixFeatures.isIdentical(Afound,A,1e-10));
-	}
-
-	@Test
-	public void set_RowMajor() {
-		DenseMatrix64F A = RandomMatrices.createRandom(3,5,rand);
-
-		DenseMatrix64F Afound = new DenseMatrix64F(3,5);
-		Afound.set(3,5, true, A.data);
-
-		assertTrue(MatrixFeatures.isIdentical(Afound,A,1e-10));
-		assertTrue(A.data != Afound.data);
-	}
+        assertTrue(MatrixFeatures.isIdentical(Afound,A,1e-10));
+    }
 
     @Test
-    public void testSetReshape_Matrix() {
+    public void set_RowMajor() {
+        DenseMatrix64F A = RandomMatrices.createRandom(3,5,rand);
+
+        DenseMatrix64F Afound = new DenseMatrix64F(3,5);
+        Afound.set(3,5, true, A.data);
+
+        assertTrue(MatrixFeatures.isIdentical(Afound,A,1e-10));
+        assertTrue(A.data != Afound.data);
+    }
+
+    @Test
+    public void testset_Matrix() {
         double d[][] = new double[][]{{1,2},{3,4},{5,6}};
 
         DenseMatrix64F mat = new DenseMatrix64F(d);
         DenseMatrix64F mat2 = new DenseMatrix64F(5,5);
 
-        mat2.setReshape(mat);
+        mat2.set(mat);
 
         assertEquals(mat.getNumCols(),mat2.getNumCols());
         assertEquals(mat.getNumRows(),mat2.getNumRows());

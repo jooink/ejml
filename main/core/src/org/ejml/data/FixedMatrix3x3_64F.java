@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.data;
 
 import org.ejml.ops.MatrixIO;
@@ -133,6 +132,23 @@ public class FixedMatrix3x3_64F implements FixedMatrix64F {
     }
 
     @Override
+    public void set(Matrix original) {
+        if( original.getNumCols() != 3 || original.getNumRows() != 3 )
+            throw new IllegalArgumentException("Rows and/or columns do not match");
+        RealMatrix64F m = (RealMatrix64F)original;
+        
+        a11 = m.get(0,0);
+        a12 = m.get(0,1);
+        a13 = m.get(0,2);
+        a21 = m.get(1,0);
+        a22 = m.get(1,1);
+        a23 = m.get(1,2);
+        a31 = m.get(2,0);
+        a32 = m.get(2,1);
+        a33 = m.get(2,2);
+    }
+
+    @Override
     public int getNumRows() {
         return 3;
     }
@@ -148,7 +164,7 @@ public class FixedMatrix3x3_64F implements FixedMatrix64F {
     }
 
     @Override
-    public <T extends Matrix64F> T copy() {
+    public <T extends Matrix> T copy() {
         return (T)new FixedMatrix3x3_64F(this);
     }
 

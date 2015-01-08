@@ -18,7 +18,7 @@
 
 package org.ejml.interfaces.linsol;
 
-import org.ejml.data.Matrix64F;
+import org.ejml.data.Matrix;
 
 
 /**
@@ -40,16 +40,16 @@ import org.ejml.data.Matrix64F;
  * <p>
  * To solve a system:<br>
  * <ol>
- * <li> Call {@link #setA(org.ejml.data.Matrix64F)}
- * <li> Call {@link #solve(org.ejml.data.Matrix64F, org.ejml.data.Matrix64F)}.
+ * <li> Call {@link #setA(org.ejml.data.Matrix)}
+ * <li> Call {@link #solve(org.ejml.data.Matrix, org.ejml.data.Matrix)}.
  * </ol>
  * </p>
  *
  * <p>
  * To invert a matrix:<br>
  * <ol>
- * <li> Call {@link #setA(org.ejml.data.Matrix64F)}
- * <li> Call {@link #invert(org.ejml.data.Matrix64F)}.
+ * <li> Call {@link #setA(org.ejml.data.Matrix)}
+ * <li> Call {@link #invert(org.ejml.data.Matrix)}.
  * </ol>
  * A matrix can also be inverted by passing in an identity matrix to solve, but this will be
  * slower and more memory intensive than the specialized invert() function.
@@ -66,7 +66,7 @@ import org.ejml.data.Matrix64F;
  *
  * @author Peter Abeles
  */
-public interface LinearSolver< T extends Matrix64F> {
+public interface LinearSolver< T extends Matrix> {
 
     /**
      * <p>
@@ -91,7 +91,7 @@ public interface LinearSolver< T extends Matrix64F> {
      * be invariant to the scale of the matrix and always be positive, with larger values
      * indicating it is less singular.  If not supported by the solver then the runtime
      * exception IllegalArgumentException is thrown.  This is NOT the matrix's condition.
-     * <p>
+     * </p>
      *
      * <p>
      * How this function is implemented is not specified.  One possible implementation is the following:
@@ -120,7 +120,7 @@ public interface LinearSolver< T extends Matrix64F> {
 
 
     /**
-     * Computes the inverse of of the 'A' matrix passed into {@link #setA(org.ejml.data.Matrix64F)}
+     * Computes the inverse of of the 'A' matrix passed into {@link #setA(org.ejml.data.Matrix)}
      * and writes the results to the provided matrix.  If 'A_inv' needs to be different from 'A'
      * is implementation dependent.
      *
@@ -129,7 +129,7 @@ public interface LinearSolver< T extends Matrix64F> {
     public void invert( T A_inv );
 
     /**
-     * Returns true if the passed in matrix to {@link #setA(org.ejml.data.Matrix64F)}
+     * Returns true if the passed in matrix to {@link #setA(org.ejml.data.Matrix)}
      * is modified.
      *
      * @return true if A is modified in setA().
@@ -137,7 +137,7 @@ public interface LinearSolver< T extends Matrix64F> {
     public boolean modifiesA();
 
     /**
-     * Returns true if the passed in 'B' matrix to {@link #solve(org.ejml.data.Matrix64F, org.ejml.data.Matrix64F)}
+     * Returns true if the passed in 'B' matrix to {@link #solve(org.ejml.data.Matrix, org.ejml.data.Matrix)}
      * is modified.
      *
      * @return true if B is modified in solve(B,X).

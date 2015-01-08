@@ -19,26 +19,19 @@
 package org.ejml.data;
 
 import org.ejml.UtilEjml;
-import org.ejml.ops.CommonOps;
 import org.ejml.ops.MatrixIO;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 
 
 /**
  * <p>
- * DenseMatrix64F is a dense matrix with elements that are 64-bit floats (doubles).  A matrix
+ * DenseMatrix64F is a dense matrix with elements that are 64-bit floats.  A matrix
  * is the fundamental data structure in linear algebra.  Unlike a sparse matrix, there is no
  * compression in a dense matrix and every element is stored in memory.  This allows for fast
  * reads and writes to the matrix.
- * </p>
- *
- * <p>
- * To keep the code manageable and the library easier to use only basic functions for accessing and editing elements
- * are provided in this class.  The numerous operations which can be performed on DenseMatrix64F
- * are contained in various other classes, where the most common operations can be found in
- * the {@link org.ejml.ops.CommonOps} and {@link org.ejml.ops.SpecializedOps} classes.
  * </p>
  *
  * <p>
@@ -69,17 +62,6 @@ import java.io.PrintStream;
  * </tr>
  * </table>
  * </p>
- *
- *
- * <p>
- * An alternative to working directly with DenseMatrix64 is {@link org.ejml.simple.SimpleMatrix}.
- * SimpleMatrix is a wrapper around DenseMatrix64F that provides an easier to use object oriented way of manipulating
- * matrices, at the cost of efficiency.
- * </p>
- *
- * @see org.ejml.ops.CommonOps
- * @see org.ejml.ops.SpecializedOps
- * @see org.ejml.simple.SimpleMatrix
  *
  * @author Peter Abeles
  */
@@ -191,8 +173,8 @@ public class DenseMatrix64F extends RowD1Matrix64F {
      *
      * @param mat Matrix whose values will be copied.  Not modified.
      */
-    public DenseMatrix64F(ReshapeMatrix64F mat) {
-        this(mat.numRows,mat.numCols);
+    public DenseMatrix64F(RealMatrix64F mat) {
+        this(mat.getNumRows(),mat.getNumCols());
         for( int i = 0; i < numRows; i++ ) {
             for( int j = 0; j < numCols; j++ ) {
                 set(i,j, mat.get(i,j));
@@ -333,50 +315,19 @@ public class DenseMatrix64F extends RowD1Matrix64F {
         return numRows*numCols;
     }
 
-
-    /**
-     * <p>
-     * Sets the value and shape of this matrix to be identical to the specified matrix. The width and height are
-     * changed to match the matrix that has been provided.  If more memory is needed then a new data array is
-     * declared.<br>
-     * <br>
-     * a.numRows = b.numRows<br>
-     * a.numCols = b.numCols<br>
-     * <br>
-     * a<sub>ij</sub> = b<sub>ij</sub><br>
-     * <br>
-     *
-     * <p>
-     * @param b The matrix that this matrix is to be set equal to.
-     */
-    public void setReshape( DenseMatrix64F b)
-    {
-        int dataLength = b.getNumElements();
-
-        if( data.length < dataLength ) {
-            data = new double[ dataLength ];
-        }
-
-        this.numRows = b.numRows;
-        this.numCols = b.numCols;
-
-        System.arraycopy(b.data, 0, this.data, 0, dataLength);
-    }
-
     /**
      * Sets this matrix equal to the matrix encoded in the array.
      *
      * @param numRows The number of rows.
-	 * @param numCols The number of columns.
-	 * @param rowMajor If the array is encoded in a row-major or a column-major format.
-	 * @param data The formatted 1D array. Not modified.
-	 */
+     * @param numCols The number of columns.
+     * @param rowMajor If the array is encoded in a row-major or a column-major format.
+     * @param data The formatted 1D array. Not modified.
+     */
     public void set(int numRows, int numCols, boolean rowMajor, double ...data)
     {
+        reshape(numRows,numCols);
         int length = numRows*numCols;
 
-        if( numRows != this.numRows || numCols != this.numCols)
-            throw new IllegalArgumentException("Unexpected matrix shape.");
         if( length > this.data.length )
             throw new IllegalArgumentException("The length of this matrix's data array is too small.");
 
@@ -396,7 +347,7 @@ public class DenseMatrix64F extends RowD1Matrix64F {
      * Sets all elements equal to zero.
      */
     public void zero() {
-        CommonOps.fill(this, 0.0);
+        Arrays.fill(data, 0, getNumElements(), 0.0);
     }
 
     /**
@@ -407,6 +358,25 @@ public class DenseMatrix64F extends RowD1Matrix64F {
     @SuppressWarnings({"unchecked"})
     public DenseMatrix64F copy() {
         return new DenseMatrix64F(this);
+    }
+
+    @Override
+    public void set(Matrix original) {
+        RealMatrix64F m = (RealMatrix64F)original;
+
+        reshape(original.getNumRows(),original.getNumCols());
+
+        if( original instanceof DenseMatrix64F ) {
+            // do a faster copy if its of type DenseMatrix64F
+            System.arraycopy(((DenseMatrix64F)m).data,0,data,0,numRows*numCols);
+        } else {
+            int index = 0;
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    data[index++] = m.get(i, j);
+                }
+            }
+        }
     }
 
     /**
@@ -433,7 +403,7 @@ public class DenseMatrix64F extends RowD1Matrix64F {
     /**
      * <p>
      * Converts the array into a string format for display purposes.
-     * The conversion is done using {@link MatrixIO#print(java.io.PrintStream, Matrix64F)}.
+     * The conversion is done using {@link MatrixIO#print(java.io.PrintStream, RealMatrix64F)}.
      * </p>
      *
      * @return String representation of the matrix.

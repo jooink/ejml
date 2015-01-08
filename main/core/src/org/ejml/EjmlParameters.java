@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -26,6 +26,10 @@ package org.ejml;
  * @author Peter Abeles
  */
 public class EjmlParameters {
+
+    public static final float TOL32 = 1e-4f;
+    public static final double TOL64 = 1e-8;
+
 
     /**
      * Used to adjust which algorithms are used.  Often there is a trade off between memory usage
@@ -59,6 +63,8 @@ public class EjmlParameters {
     public static int MULT_COLUMN_SWITCH = 15;
     public static int MULT_TRANAB_COLUMN_SWITCH = 40;
     public static int MULT_INNER_SWITCH = 100;
+
+    public static int CMULT_COLUMN_SWITCH = 7;
     
     /**
      * <p>

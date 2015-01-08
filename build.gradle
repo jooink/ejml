@@ -3,7 +3,7 @@ allprojects {
     apply plugin: 'eclipse'
 
     group = 'com.googlecode.efficient-java-matrix-library'
-    version = '0.26'
+    version = '0.27-SNAPSHOT'
 }
 
 subprojects {
@@ -13,6 +13,8 @@ subprojects {
     apply plugin: 'signing'
 
     sourceCompatibility = 1.6
+
+    javadoc.failOnError = false
 
     repositories {
         mavenCentral()
@@ -126,6 +128,8 @@ subprojects {
 }
 
 def allModules = [
+        ':main:denseC64',
+        ':main:dense64',
         ':main:equation',
         ':main:core',
         ':main:experimental'
@@ -162,6 +166,8 @@ idea {
 }
 
 def javadocProjects = [
+        ':main:denseC64',
+        ':main:dense64',
         ':main:core',
         ':main:equation',
         ':main:experimental'
@@ -179,6 +185,12 @@ task alljavadoc(type: Javadoc) {
         header = file('docs/header.txt').text
         bottom = file('docs/bottom.txt').text // the quotes messes up javadoc still create bug report
     }
+}
+
+task oneJarBin(type: Jar, dependsOn: javadocProjects.collect { it + ":compileJava" }) {
+    baseName = 'EJML'
+
+    from files(javadocProjects.collect { project(it).sourceSets.main.output })
 }
 
 // Disable the creation of jars for distribution.  If you don't do this it will crash

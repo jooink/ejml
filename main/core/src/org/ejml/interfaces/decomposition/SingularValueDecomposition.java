@@ -18,7 +18,7 @@
 
 package org.ejml.interfaces.decomposition;
 
-import org.ejml.data.Matrix64F;
+import org.ejml.data.Matrix;
 
 
 /**
@@ -53,7 +53,7 @@ import org.ejml.data.Matrix64F;
  *
  * @author Peter Abeles
  */
-public abstract interface SingularValueDecomposition <T extends Matrix64F>
+public abstract interface SingularValueDecomposition <T extends Matrix>
         extends DecompositionInterface<T> {
 
     /**
