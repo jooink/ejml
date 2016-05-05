@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -27,10 +27,8 @@ import org.ejml.alg.dense.misc.*;
 import org.ejml.alg.dense.mult.MatrixMatrixMult;
 import org.ejml.alg.dense.mult.MatrixMultProduct;
 import org.ejml.alg.dense.mult.MatrixVectorMult;
-import org.ejml.data.D1Matrix64F;
-import org.ejml.data.DenseMatrix64F;
-import org.ejml.data.RealMatrix64F;
-import org.ejml.data.RowD1Matrix64F;
+import org.ejml.alg.dense.mult.VectorVectorMult;
+import org.ejml.data.*;
 import org.ejml.factory.LinearSolverFactory;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.interfaces.linsol.ReducedRowEchelonForm;
@@ -71,7 +69,7 @@ public class CommonOps {
     public static void mult( RowD1Matrix64F a , RowD1Matrix64F b , RowD1Matrix64F c )
     {
         if( b.numCols == 1 ) {
-            MatrixVectorMult.mult(a,b,c);
+            MatrixVectorMult.mult(a, b, c);
         } else if( b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
             MatrixMatrixMult.mult_reorder(a,b,c);
         } else {
@@ -96,7 +94,7 @@ public class CommonOps {
     {
         // TODO add a matrix vectory multiply here
         if( b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
-            MatrixMatrixMult.mult_reorder(alpha,a,b,c);
+            MatrixMatrixMult.mult_reorder(alpha, a, b, c);
         } else {
             MatrixMatrixMult.mult_small(alpha,a,b,c);
         }
@@ -126,9 +124,9 @@ public class CommonOps {
             }
         } else if( a.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ||
                 b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH  ) {
-            MatrixMatrixMult.multTransA_reorder(a,b,c);
+            MatrixMatrixMult.multTransA_reorder(a, b, c);
         } else {
-            MatrixMatrixMult.multTransA_small(a,b,c);
+            MatrixMatrixMult.multTransA_small(a, b, c);
         }
     }
 
@@ -150,9 +148,9 @@ public class CommonOps {
         // TODO add a matrix vectory multiply here
         if( a.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ||
                 b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multTransA_reorder(alpha,a,b,c);
+            MatrixMatrixMult.multTransA_reorder(alpha, a, b, c);
         } else {
-            MatrixMatrixMult.multTransA_small(alpha,a,b,c);
+            MatrixMatrixMult.multTransA_small(alpha, a, b, c);
         }
     }
 
@@ -171,9 +169,9 @@ public class CommonOps {
     public static void multTransB( RowD1Matrix64F a , RowD1Matrix64F b , RowD1Matrix64F c )
     {
         if( b.numRows == 1 ) {
-            MatrixVectorMult.mult(a,b,c);
+            MatrixVectorMult.mult(a, b, c);
         } else {
-            MatrixMatrixMult.multTransB(a,b,c);
+            MatrixMatrixMult.multTransB(a, b, c);
         }
     }
 
@@ -218,9 +216,9 @@ public class CommonOps {
                 MatrixVectorMult.multTransA_small(a,b,c);
             }
         } else if( a.numCols >= EjmlParameters.MULT_TRANAB_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multTransAB_aux(a,b,c,null);
+            MatrixMatrixMult.multTransAB_aux(a, b, c, null);
         } else {
-            MatrixMatrixMult.multTransAB(a,b,c);
+            MatrixMatrixMult.multTransAB(a, b, c);
         }
     }
 
@@ -241,10 +239,28 @@ public class CommonOps {
     {
         // TODO add a matrix vectory multiply here
         if( a.numCols >= EjmlParameters.MULT_TRANAB_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multTransAB_aux(alpha,a,b,c,null);
+            MatrixMatrixMult.multTransAB_aux(alpha, a, b, c, null);
         } else {
-            MatrixMatrixMult.multTransAB(alpha,a,b,c);
+            MatrixMatrixMult.multTransAB(alpha, a, b, c);
         }
+    }
+
+    /**
+     * <p></p>
+     * Computes the dot product or inner product between two vectors.  If the two vectors are columns vectors
+     * then it is defined as:<br>
+     * {@code dot(a,b) = a<sup>T</sup> * b}<br>
+     * If the vectors are column or row or both is ignored by this function.
+     * </p>
+     * @param a Vector
+     * @param b Vector
+     * @return Dot product of the two vectors
+     */
+    public static double dot( D1Matrix64F a , D1Matrix64F b ) {
+        if( !MatrixFeatures.isVector(a) || !MatrixFeatures.isVector(b))
+            throw new RuntimeException("Both inputs must be vectors");
+
+        return VectorVectorMult.innerProd(a,b);
     }
 
     /**
@@ -313,7 +329,7 @@ public class CommonOps {
     public static void multAdd( RowD1Matrix64F a , RowD1Matrix64F b , RowD1Matrix64F c )
     {
         if( b.numCols == 1 ) {
-            MatrixVectorMult.multAdd(a,b,c);
+            MatrixVectorMult.multAdd(a, b, c);
         } else {
             if( b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
                 MatrixMatrixMult.multAdd_reorder(a,b,c);
@@ -340,7 +356,7 @@ public class CommonOps {
     {
         // TODO add a matrix vectory multiply here
         if( b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multAdd_reorder(alpha,a,b,c);
+            MatrixMatrixMult.multAdd_reorder(alpha, a, b, c);
         } else {
             MatrixMatrixMult.multAdd_small(alpha,a,b,c);
         }
@@ -369,9 +385,9 @@ public class CommonOps {
         } else {
             if( a.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ||
                     b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH  ) {
-                MatrixMatrixMult.multAddTransA_reorder(a,b,c);
+                MatrixMatrixMult.multAddTransA_reorder(a, b, c);
             } else {
-                MatrixMatrixMult.multAddTransA_small(a,b,c);
+                MatrixMatrixMult.multAddTransA_small(a, b, c);
             }
         }
     }
@@ -394,9 +410,9 @@ public class CommonOps {
         // TODO add a matrix vectory multiply here
         if( a.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ||
                 b.numCols >= EjmlParameters.MULT_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multAddTransA_reorder(alpha,a,b,c);
+            MatrixMatrixMult.multAddTransA_reorder(alpha, a, b, c);
         } else {
-            MatrixMatrixMult.multAddTransA_small(alpha,a,b,c);
+            MatrixMatrixMult.multAddTransA_small(alpha, a, b, c);
         }
     }
 
@@ -481,9 +497,9 @@ public class CommonOps {
     {
         // TODO add a matrix vectory multiply here
         if( a.numCols >= EjmlParameters.MULT_TRANAB_COLUMN_SWITCH ) {
-            MatrixMatrixMult.multAddTransAB_aux(alpha,a,b,c,null);
+            MatrixMatrixMult.multAddTransAB_aux(alpha, a, b, c, null);
         } else {
-            MatrixMatrixMult.multAddTransAB(alpha,a,b,c);
+            MatrixMatrixMult.multAddTransAB(alpha, a, b, c);
         }
     }
 
@@ -525,7 +541,7 @@ public class CommonOps {
         if( !solver.setA(a) )
             return false;
 
-        solver.solve(b,x);
+        solver.solve(b, x);
         return true;
     }
 
@@ -593,7 +609,7 @@ public class CommonOps {
      * @param a A square matrix.  Not modified.
      */
     public static double trace( RowD1Matrix64F a ) {
-        int N = Math.min(a.numRows,a.numCols);
+        int N = Math.min(a.numRows, a.numCols);
         double sum = 0;
         int index = 0;
         for( int i = 0; i < N; i++ ) {
@@ -950,7 +966,7 @@ public class CommonOps {
         int o = Math.min(numRows,numCols);
 
         for( int i = 0; i < o; i++ ) {
-            ret.set(i,i,diagEl[i]);
+            ret.set(i, i, diagEl[i]);
         }
 
         return ret;
@@ -1080,6 +1096,82 @@ public class CommonOps {
     }
 
     /**
+     * Extracts out a matrix from source given a sub matrix with arbitrary rows and columns specified in
+     * two array lists
+     *
+     * @param src Source matrix. Not modified.
+     * @param rows array of row indexes
+     * @param rowsSize maximum element in row array
+     * @param cols array of column indexes
+     * @param colsSize maximum element in column array
+     * @param dst output matrix.  Must be correct shape.
+     */
+    public static void extract( DenseMatrix64F src,
+                                int rows[] , int rowsSize ,
+                                int cols[] , int colsSize , DenseMatrix64F dst ) {
+        if( rowsSize != dst.numRows || colsSize != dst.numCols )
+            throw new IllegalArgumentException("Unexpected number of rows and/or columns in dst matrix");
+
+        int indexDst = 0;
+        for (int i = 0; i < rowsSize; i++) {
+            int indexSrcRow = src.numCols*rows[i];
+            for (int j = 0; j < colsSize; j++) {
+                dst.data[indexDst++] = src.data[indexSrcRow + cols[j]];
+            }
+        }
+    }
+
+    /**
+     * Extracts the elements from the source matrix by their 1D index.
+     *
+     * @param src Source matrix. Not modified.
+     * @param indexes array of row indexes
+     * @param length maximum element in row array
+     * @param dst output matrix.  Must be a vector of the correct length.
+     */
+    public static void extract( DenseMatrix64F src,  int indexes[] , int length , DenseMatrix64F dst ) {
+        if( !MatrixFeatures.isVector(dst))
+            throw new IllegalArgumentException("Dst must be a vector");
+        if( length != dst.getNumElements())
+            throw new IllegalArgumentException("Unexpected number of elements in dst vector");
+
+        for (int i = 0; i < length; i++) {
+            dst.data[i] = src.data[indexes[i]];
+        }
+    }
+
+    /**
+     * Inserts into the specified elements of dst the source matrix.
+     * <pre>
+     * for i in len(rows):
+     *   for j in len(cols):
+     *      dst(rows[i],cols[j]) = src(i,j)
+     * </pre>
+     *
+     * @param src Source matrix. Not modified.
+     * @param dst output matrix.  Must be correct shape.
+     * @param rows array of row indexes
+     * @param rowsSize maximum element in row array
+     * @param cols array of column indexes
+     * @param colsSize maximum element in column array
+     */
+    public static void insert( DenseMatrix64F src ,
+                               DenseMatrix64F dst ,
+                                int rows[] , int rowsSize ,
+                                int cols[] , int colsSize ) {
+        if( rowsSize != src.numRows || colsSize != src.numCols )
+            throw new IllegalArgumentException("Unexpected number of rows and/or columns in dst matrix");
+
+        int indexSrc = 0;
+        for (int i = 0; i < rowsSize; i++) {
+            int indexDstRow = dst.numCols*rows[i];
+            for (int j = 0; j < colsSize; j++) {
+                dst.data[indexDstRow + cols[j]] = src.data[indexSrc++];
+            }
+        }
+    }
+
+    /**
      * <p>
      * Extracts the diagonal elements 'src' write it to the 'dst' vector.  'dst'
      * can either be a row or column vector.
@@ -1104,6 +1196,44 @@ public class CommonOps {
     }
 
     /**
+     * Extracts the row from a matrix.
+     * @param a Input matrix
+     * @param row Which row is to be extracted
+     * @param out output. Storage for the extracted row. If null then a new vector will be returned.
+     * @return The extracted row.
+     */
+    public static DenseMatrix64F extractRow( DenseMatrix64F a , int row , DenseMatrix64F out ) {
+        if( out == null)
+            out = new DenseMatrix64F(1,a.numCols);
+        else if( !MatrixFeatures.isVector(out) || out.getNumElements() != a.numCols )
+            throw new IllegalArgumentException("Output must be a vector of length "+a.numCols);
+
+        System.arraycopy(a.data,a.getIndex(row,0),out.data,0,a.numCols);
+
+        return out;
+    }
+
+    /**
+     * Extracts the column from a matrix.
+     * @param a Input matrix
+     * @param column Which column is to be extracted
+     * @param out output. Storage for the extracted column. If null then a new vector will be returned.
+     * @return The extracted column.
+     */
+    public static DenseMatrix64F extractColumn( DenseMatrix64F a , int column , DenseMatrix64F out ) {
+        if( out == null)
+            out = new DenseMatrix64F(a.numRows,1);
+        else if( !MatrixFeatures.isVector(out) || out.getNumElements() != a.numRows )
+            throw new IllegalArgumentException("Output must be a vector of length "+a.numRows);
+
+        int index = column;
+        for (int i = 0; i < a.numRows; i++, index += a.numCols ) {
+            out.data[i] = a.data[index];
+        }
+        return out;
+    }
+
+    /**
      * Inserts matrix 'src' into matrix 'dest' with the (0,0) of src at (row,col) in dest.
      * This is equivalent to calling extract(src,0,src.numRows,0,src.numCols,dest,destY0,destX0).
      *
@@ -1113,7 +1243,7 @@ public class CommonOps {
      * @param destX0 Start column for the copy into dest.
      */
     public static void insert( RealMatrix64F src, RealMatrix64F dest, int destY0, int destX0) {
-        extract(src,0,src.getNumRows(),0,src.getNumCols(),dest,destY0,destX0);
+        extract(src, 0, src.getNumRows(), 0, src.getNumCols(), dest, destY0, destX0);
     }
 
     /**
@@ -1155,7 +1285,7 @@ public class CommonOps {
 
         double max = 0;
         for( int i = 0; i < size; i++ ) {
-            double val = Math.abs(a.get( i ));
+            double val = Math.abs(a.get(i));
             if( val > max ) {
                 max = val;
             }
@@ -1229,7 +1359,7 @@ public class CommonOps {
         int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            a.times(i , b.get(i));
+            a.times(i, b.get(i));
         }
     }
 
@@ -1252,7 +1382,7 @@ public class CommonOps {
         int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set( i , a.get(i) * b.get(i) );
+            c.set(i, a.get(i) * b.get(i));
         }
     }
 
@@ -1273,7 +1403,7 @@ public class CommonOps {
         int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            a.div(i , b.get(i));
+            a.div(i, b.get(i));
         }
     }
 
@@ -1296,7 +1426,7 @@ public class CommonOps {
         int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set( i , a.get(i) / b.get(i) );
+            c.set(i, a.get(i) / b.get(i));
         }
     }
 
@@ -1363,7 +1493,7 @@ public class CommonOps {
 
         int size = A.getNumElements();
         for( int i = 0; i < size; i++ ) {
-            C.data[i] = Math.pow(A.data[i],B.data[i]);
+            C.data[i] = Math.pow(A.data[i], B.data[i]);
         }
     }
 
@@ -1385,7 +1515,7 @@ public class CommonOps {
 
         int size = B.getNumElements();
         for( int i = 0; i < size; i++ ) {
-            C.data[i] = Math.pow(a,B.data[i]);
+            C.data[i] = Math.pow(a, B.data[i]);
         }
     }
 
@@ -1407,7 +1537,7 @@ public class CommonOps {
 
         int size = A.getNumElements();
         for( int i = 0; i < size; i++ ) {
-            C.data[i] = Math.pow(A.data[i],b);
+            C.data[i] = Math.pow(A.data[i], b);
         }
     }
 
@@ -1509,7 +1639,7 @@ public class CommonOps {
                 total += input.data[index];
             }
 
-            output.set(cols,total);
+            output.set(cols, total);
         }
         return output;
     }
@@ -1586,7 +1716,7 @@ public class CommonOps {
         final int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set( i , a.get(i)+b.get(i) );
+            c.set(i, a.get(i) + b.get(i));
         }
     }
 
@@ -1616,7 +1746,7 @@ public class CommonOps {
         final int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set( i , a.get(i)+beta*b.get(i) );
+            c.set(i, a.get(i) + beta * b.get(i));
         }
     }
 
@@ -1647,7 +1777,7 @@ public class CommonOps {
         final int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set(i , alpha*a.get(i) + beta*b.get(i));
+            c.set(i, alpha * a.get(i) + beta * b.get(i));
         }
     }
 
@@ -1677,7 +1807,7 @@ public class CommonOps {
         final int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            c.set( i , alpha*a.get(i) + b.get(i));
+            c.set(i, alpha * a.get(i) + b.get(i));
         }
     }
 
@@ -1695,7 +1825,7 @@ public class CommonOps {
         final int length = a.getNumElements();
 
         for( int i = 0; i < length; i++ ) {
-            a.plus( i , val);
+            a.plus(i, val);
         }
     }
 
@@ -1997,7 +2127,7 @@ public class CommonOps {
      */
     public static void fill(D1Matrix64F a, double value)
     {
-        Arrays.fill(a.data,0,a.getNumElements(),value);
+        Arrays.fill(a.data, 0, a.getNumElements(), value);
     }
 
     /**
@@ -2040,5 +2170,201 @@ public class CommonOps {
         alg.reduce(reduced, numUnknowns);
 
         return reduced;
+    }
+
+    /**
+     * Applies the < operator to each element in A.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrx
+     * @param value value each element is compared against
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementLessThan( DenseMatrix64F A , double value , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] < value;
+        }
+
+        return output;
+    }
+
+    /**
+     * Applies the <= operator to each element in A.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrix
+     * @param value value each element is compared against
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementLessThanOrEqual( DenseMatrix64F A , double value , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] <= value;
+        }
+
+        return output;
+    }
+
+    /**
+     * Applies the > operator to each element in A.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrix
+     * @param value value each element is compared against
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementMoreThan( DenseMatrix64F A , double value , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] > value;
+        }
+
+        return output;
+    }
+
+    /**
+     * Applies the >= operator to each element in A.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrix
+     * @param value value each element is compared against
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementMoreThanOrEqual( DenseMatrix64F A , double value , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] >= value;
+        }
+
+        return output;
+    }
+
+    /**
+     * Applies the < operator to each element in A.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrix
+     * @param B Input matrix
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementLessThan( DenseMatrix64F A , DenseMatrix64F B , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] < B.data[i];
+        }
+
+        return output;
+    }
+
+    /**
+     * Applies the A <= B operator to each element.  Results are stored in a boolean matrix.
+     *
+     * @param A Input matrix
+     * @param B Input matrix
+     * @param output (Optional) Storage for results.  Can be null. Is reshaped.
+     * @return Boolean matrix with results
+     */
+    public static DenseMatrixBool elementLessThanOrEqual( DenseMatrix64F A , DenseMatrix64F B , DenseMatrixBool output )
+    {
+        if( output == null ) {
+            output = new DenseMatrixBool(A.numRows,A.numCols);
+        }
+
+        output.reshape(A.numRows, A.numCols);
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            output.data[i] = A.data[i] <= B.data[i];
+        }
+
+        return output;
+    }
+
+    /**
+     * Returns a row matrix which contains all the elements in A which are flagged as true in 'marked'
+     *
+     * @param A Input matrix
+     * @param marked Input matrix marking elements in A
+     * @param output Storage for output row vector. Can be null.  Will be reshaped.
+     * @return Row vector with marked elements
+     */
+    public static DenseMatrix64F elements( DenseMatrix64F A , DenseMatrixBool marked , DenseMatrix64F output ) {
+        if( A.numRows != marked.numRows || A.numCols != marked.numCols )
+            throw new IllegalArgumentException("Input matrices must have the same shape");
+        if( output == null )
+            output = new DenseMatrix64F(1,1);
+
+        output.reshape(countTrue(marked),1);
+
+        int N = A.getNumElements();
+
+        int index = 0;
+        for (int i = 0; i < N; i++) {
+            if( marked.data[i] ) {
+                output.data[index++] = A.data[i];
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * Counts the number of elements in A which are true
+     * @param A input matrix
+     * @return number of true elements
+     */
+    public static int countTrue(DenseMatrixBool A) {
+        int total = 0;
+
+        int N = A.getNumElements();
+
+        for (int i = 0; i < N; i++) {
+            if( A.data[i] )
+                total++;
+        }
+
+        return total;
     }
 }

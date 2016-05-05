@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ejml.alg.fixed;
 
 import org.ejml.data.FixedMatrix6_64F;
@@ -85,6 +84,30 @@ public class FixedOps6 {
     /**
      * <p>Performs the following operation:<br>
      * <br>
+     * c = a + b <br>
+     * c<sub>i</sub> = a<sub>i</sub> + b<sub>i</sub> <br>
+     * </p>
+     *
+     * <p>
+     * Vector C can be the same instance as Vector A and/or B.
+     * </p>
+     *
+     * @param a A Vector. Not modified.
+     * @param b A Vector. Not modified.
+     * @param c A Vector where the results are stored. Modified.
+     */
+    public static void add( FixedMatrix6_64F a , FixedMatrix6_64F b , FixedMatrix6_64F c ) {
+        c.a1 = a.a1 + b.a1;
+        c.a2 = a.a2 + b.a2;
+        c.a3 = a.a3 + b.a3;
+        c.a4 = a.a4 + b.a4;
+        c.a5 = a.a5 + b.a5;
+        c.a6 = a.a6 + b.a6;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
      * a = a + b <br>
      * a<sub>ij</sub> = a<sub>ij</sub> + b<sub>ij</sub> <br>
      * </p>
@@ -129,6 +152,171 @@ public class FixedOps6 {
         a.a64 += b.a64;
         a.a65 += b.a65;
         a.a66 += b.a66;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * a = a + b <br>
+     * a<sub>i</sub> = a<sub>i</sub> + b<sub>i</sub> <br>
+     * </p>
+     *
+     * @param a A Vector. Modified.
+     * @param b A Vector. Not modified.
+     */
+    public static void addEquals( FixedMatrix6_64F a , FixedMatrix6_64F b ) {
+        a.a1 += b.a1;
+        a.a2 += b.a2;
+        a.a3 += b.a3;
+        a.a4 += b.a4;
+        a.a5 += b.a5;
+        a.a6 += b.a6;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * c = a - b <br>
+     * c<sub>ij</sub> = a<sub>ij</sub> - b<sub>ij</sub> <br>
+     * </p>
+     *
+     * <p>
+     * Matrix C can be the same instance as Matrix A and/or B.
+     * </p>
+     *
+     * @param a A Matrix. Not modified.
+     * @param b A Matrix. Not modified.
+     * @param c A Matrix where the results are stored. Modified.
+     */
+    public static void subtract( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b , FixedMatrix6x6_64F c ) {
+        c.a11 = a.a11 - b.a11;
+        c.a12 = a.a12 - b.a12;
+        c.a13 = a.a13 - b.a13;
+        c.a14 = a.a14 - b.a14;
+        c.a15 = a.a15 - b.a15;
+        c.a16 = a.a16 - b.a16;
+        c.a21 = a.a21 - b.a21;
+        c.a22 = a.a22 - b.a22;
+        c.a23 = a.a23 - b.a23;
+        c.a24 = a.a24 - b.a24;
+        c.a25 = a.a25 - b.a25;
+        c.a26 = a.a26 - b.a26;
+        c.a31 = a.a31 - b.a31;
+        c.a32 = a.a32 - b.a32;
+        c.a33 = a.a33 - b.a33;
+        c.a34 = a.a34 - b.a34;
+        c.a35 = a.a35 - b.a35;
+        c.a36 = a.a36 - b.a36;
+        c.a41 = a.a41 - b.a41;
+        c.a42 = a.a42 - b.a42;
+        c.a43 = a.a43 - b.a43;
+        c.a44 = a.a44 - b.a44;
+        c.a45 = a.a45 - b.a45;
+        c.a46 = a.a46 - b.a46;
+        c.a51 = a.a51 - b.a51;
+        c.a52 = a.a52 - b.a52;
+        c.a53 = a.a53 - b.a53;
+        c.a54 = a.a54 - b.a54;
+        c.a55 = a.a55 - b.a55;
+        c.a56 = a.a56 - b.a56;
+        c.a61 = a.a61 - b.a61;
+        c.a62 = a.a62 - b.a62;
+        c.a63 = a.a63 - b.a63;
+        c.a64 = a.a64 - b.a64;
+        c.a65 = a.a65 - b.a65;
+        c.a66 = a.a66 - b.a66;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * c = a - b <br>
+     * c<sub>i</sub> = a<sub>i</sub> - b<sub>i</sub> <br>
+     * </p>
+     *
+     * <p>
+     * Vector C can be the same instance as Vector A and/or B.
+     * </p>
+     *
+     * @param a A Vector. Not modified.
+     * @param b A Vector. Not modified.
+     * @param c A Vector where the results are stored. Modified.
+     */
+    public static void subtract( FixedMatrix6_64F a , FixedMatrix6_64F b , FixedMatrix6_64F c ) {
+        c.a1 = a.a1 - b.a1;
+        c.a2 = a.a2 - b.a2;
+        c.a3 = a.a3 - b.a3;
+        c.a4 = a.a4 - b.a4;
+        c.a5 = a.a5 - b.a5;
+        c.a6 = a.a6 - b.a6;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * a = a - b <br>
+     * a<sub>ij</sub> = a<sub>ij</sub> - b<sub>ij</sub> <br>
+     * </p>
+     *
+     * @param a A Matrix. Modified.
+     * @param b A Matrix. Not modified.
+     */
+    public static void subtractEquals( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b ) {
+        a.a11 -= b.a11;
+        a.a12 -= b.a12;
+        a.a13 -= b.a13;
+        a.a14 -= b.a14;
+        a.a15 -= b.a15;
+        a.a16 -= b.a16;
+        a.a21 -= b.a21;
+        a.a22 -= b.a22;
+        a.a23 -= b.a23;
+        a.a24 -= b.a24;
+        a.a25 -= b.a25;
+        a.a26 -= b.a26;
+        a.a31 -= b.a31;
+        a.a32 -= b.a32;
+        a.a33 -= b.a33;
+        a.a34 -= b.a34;
+        a.a35 -= b.a35;
+        a.a36 -= b.a36;
+        a.a41 -= b.a41;
+        a.a42 -= b.a42;
+        a.a43 -= b.a43;
+        a.a44 -= b.a44;
+        a.a45 -= b.a45;
+        a.a46 -= b.a46;
+        a.a51 -= b.a51;
+        a.a52 -= b.a52;
+        a.a53 -= b.a53;
+        a.a54 -= b.a54;
+        a.a55 -= b.a55;
+        a.a56 -= b.a56;
+        a.a61 -= b.a61;
+        a.a62 -= b.a62;
+        a.a63 -= b.a63;
+        a.a64 -= b.a64;
+        a.a65 -= b.a65;
+        a.a66 -= b.a66;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * a = a - b <br>
+     * a<sub>i</sub> = a<sub>i</sub> - b<sub>i</sub> <br>
+     * </p>
+     *
+     * @param a A Vector. Modified.
+     * @param b A Vector. Not modified.
+     */
+    public static void subtractEquals( FixedMatrix6_64F a , FixedMatrix6_64F b ) {
+        a.a1 -= b.a1;
+        a.a2 -= b.a2;
+        a.a3 -= b.a3;
+        a.a4 -= b.a4;
+        a.a5 -= b.a5;
+        a.a6 -= b.a6;
     }
 
     /**
@@ -417,6 +605,210 @@ public class FixedOps6 {
     }
 
     /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * c += a * b <br>
+     * <br>
+     * c<sub>ij</sub> += &sum;<sub>k=1:n</sub> { a<sub>ik</sub> * b<sub>kj</sub>}
+     * </p>
+     *
+     * @param a The left matrix in the multiplication operation. Not modified.
+     * @param b The right matrix in the multiplication operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void multAdd( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b , FixedMatrix6x6_64F c) {
+        c.a11 += a.a11*b.a11 + a.a12*b.a21 + a.a13*b.a31 + a.a14*b.a41 + a.a15*b.a51 + a.a16*b.a61;
+        c.a12 += a.a11*b.a12 + a.a12*b.a22 + a.a13*b.a32 + a.a14*b.a42 + a.a15*b.a52 + a.a16*b.a62;
+        c.a13 += a.a11*b.a13 + a.a12*b.a23 + a.a13*b.a33 + a.a14*b.a43 + a.a15*b.a53 + a.a16*b.a63;
+        c.a14 += a.a11*b.a14 + a.a12*b.a24 + a.a13*b.a34 + a.a14*b.a44 + a.a15*b.a54 + a.a16*b.a64;
+        c.a15 += a.a11*b.a15 + a.a12*b.a25 + a.a13*b.a35 + a.a14*b.a45 + a.a15*b.a55 + a.a16*b.a65;
+        c.a16 += a.a11*b.a16 + a.a12*b.a26 + a.a13*b.a36 + a.a14*b.a46 + a.a15*b.a56 + a.a16*b.a66;
+        c.a21 += a.a21*b.a11 + a.a22*b.a21 + a.a23*b.a31 + a.a24*b.a41 + a.a25*b.a51 + a.a26*b.a61;
+        c.a22 += a.a21*b.a12 + a.a22*b.a22 + a.a23*b.a32 + a.a24*b.a42 + a.a25*b.a52 + a.a26*b.a62;
+        c.a23 += a.a21*b.a13 + a.a22*b.a23 + a.a23*b.a33 + a.a24*b.a43 + a.a25*b.a53 + a.a26*b.a63;
+        c.a24 += a.a21*b.a14 + a.a22*b.a24 + a.a23*b.a34 + a.a24*b.a44 + a.a25*b.a54 + a.a26*b.a64;
+        c.a25 += a.a21*b.a15 + a.a22*b.a25 + a.a23*b.a35 + a.a24*b.a45 + a.a25*b.a55 + a.a26*b.a65;
+        c.a26 += a.a21*b.a16 + a.a22*b.a26 + a.a23*b.a36 + a.a24*b.a46 + a.a25*b.a56 + a.a26*b.a66;
+        c.a31 += a.a31*b.a11 + a.a32*b.a21 + a.a33*b.a31 + a.a34*b.a41 + a.a35*b.a51 + a.a36*b.a61;
+        c.a32 += a.a31*b.a12 + a.a32*b.a22 + a.a33*b.a32 + a.a34*b.a42 + a.a35*b.a52 + a.a36*b.a62;
+        c.a33 += a.a31*b.a13 + a.a32*b.a23 + a.a33*b.a33 + a.a34*b.a43 + a.a35*b.a53 + a.a36*b.a63;
+        c.a34 += a.a31*b.a14 + a.a32*b.a24 + a.a33*b.a34 + a.a34*b.a44 + a.a35*b.a54 + a.a36*b.a64;
+        c.a35 += a.a31*b.a15 + a.a32*b.a25 + a.a33*b.a35 + a.a34*b.a45 + a.a35*b.a55 + a.a36*b.a65;
+        c.a36 += a.a31*b.a16 + a.a32*b.a26 + a.a33*b.a36 + a.a34*b.a46 + a.a35*b.a56 + a.a36*b.a66;
+        c.a41 += a.a41*b.a11 + a.a42*b.a21 + a.a43*b.a31 + a.a44*b.a41 + a.a45*b.a51 + a.a46*b.a61;
+        c.a42 += a.a41*b.a12 + a.a42*b.a22 + a.a43*b.a32 + a.a44*b.a42 + a.a45*b.a52 + a.a46*b.a62;
+        c.a43 += a.a41*b.a13 + a.a42*b.a23 + a.a43*b.a33 + a.a44*b.a43 + a.a45*b.a53 + a.a46*b.a63;
+        c.a44 += a.a41*b.a14 + a.a42*b.a24 + a.a43*b.a34 + a.a44*b.a44 + a.a45*b.a54 + a.a46*b.a64;
+        c.a45 += a.a41*b.a15 + a.a42*b.a25 + a.a43*b.a35 + a.a44*b.a45 + a.a45*b.a55 + a.a46*b.a65;
+        c.a46 += a.a41*b.a16 + a.a42*b.a26 + a.a43*b.a36 + a.a44*b.a46 + a.a45*b.a56 + a.a46*b.a66;
+        c.a51 += a.a51*b.a11 + a.a52*b.a21 + a.a53*b.a31 + a.a54*b.a41 + a.a55*b.a51 + a.a56*b.a61;
+        c.a52 += a.a51*b.a12 + a.a52*b.a22 + a.a53*b.a32 + a.a54*b.a42 + a.a55*b.a52 + a.a56*b.a62;
+        c.a53 += a.a51*b.a13 + a.a52*b.a23 + a.a53*b.a33 + a.a54*b.a43 + a.a55*b.a53 + a.a56*b.a63;
+        c.a54 += a.a51*b.a14 + a.a52*b.a24 + a.a53*b.a34 + a.a54*b.a44 + a.a55*b.a54 + a.a56*b.a64;
+        c.a55 += a.a51*b.a15 + a.a52*b.a25 + a.a53*b.a35 + a.a54*b.a45 + a.a55*b.a55 + a.a56*b.a65;
+        c.a56 += a.a51*b.a16 + a.a52*b.a26 + a.a53*b.a36 + a.a54*b.a46 + a.a55*b.a56 + a.a56*b.a66;
+        c.a61 += a.a61*b.a11 + a.a62*b.a21 + a.a63*b.a31 + a.a64*b.a41 + a.a65*b.a51 + a.a66*b.a61;
+        c.a62 += a.a61*b.a12 + a.a62*b.a22 + a.a63*b.a32 + a.a64*b.a42 + a.a65*b.a52 + a.a66*b.a62;
+        c.a63 += a.a61*b.a13 + a.a62*b.a23 + a.a63*b.a33 + a.a64*b.a43 + a.a65*b.a53 + a.a66*b.a63;
+        c.a64 += a.a61*b.a14 + a.a62*b.a24 + a.a63*b.a34 + a.a64*b.a44 + a.a65*b.a54 + a.a66*b.a64;
+        c.a65 += a.a61*b.a15 + a.a62*b.a25 + a.a63*b.a35 + a.a64*b.a45 + a.a65*b.a55 + a.a66*b.a65;
+        c.a66 += a.a61*b.a16 + a.a62*b.a26 + a.a63*b.a36 + a.a64*b.a46 + a.a65*b.a56 + a.a66*b.a66;
+    }
+
+    /**
+     * <p>Performs the following operation:<br>
+     * <br>
+     * c += a<sup>T</sup> * b <br>
+     * <br>
+     * c<sub>ij</sub> += &sum;<sub>k=1:n</sub> { a<sub>ki</sub> * b<sub>kj</sub>}
+     * </p>
+     *
+     * @param a The left matrix in the multiplication operation. Not modified.
+     * @param b The right matrix in the multiplication operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void multAddTransA( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b , FixedMatrix6x6_64F c) {
+        c.a11 += a.a11*b.a11 + a.a21*b.a21 + a.a31*b.a31 + a.a41*b.a41 + a.a51*b.a51 + a.a61*b.a61;
+        c.a12 += a.a11*b.a12 + a.a21*b.a22 + a.a31*b.a32 + a.a41*b.a42 + a.a51*b.a52 + a.a61*b.a62;
+        c.a13 += a.a11*b.a13 + a.a21*b.a23 + a.a31*b.a33 + a.a41*b.a43 + a.a51*b.a53 + a.a61*b.a63;
+        c.a14 += a.a11*b.a14 + a.a21*b.a24 + a.a31*b.a34 + a.a41*b.a44 + a.a51*b.a54 + a.a61*b.a64;
+        c.a15 += a.a11*b.a15 + a.a21*b.a25 + a.a31*b.a35 + a.a41*b.a45 + a.a51*b.a55 + a.a61*b.a65;
+        c.a16 += a.a11*b.a16 + a.a21*b.a26 + a.a31*b.a36 + a.a41*b.a46 + a.a51*b.a56 + a.a61*b.a66;
+        c.a21 += a.a12*b.a11 + a.a22*b.a21 + a.a32*b.a31 + a.a42*b.a41 + a.a52*b.a51 + a.a62*b.a61;
+        c.a22 += a.a12*b.a12 + a.a22*b.a22 + a.a32*b.a32 + a.a42*b.a42 + a.a52*b.a52 + a.a62*b.a62;
+        c.a23 += a.a12*b.a13 + a.a22*b.a23 + a.a32*b.a33 + a.a42*b.a43 + a.a52*b.a53 + a.a62*b.a63;
+        c.a24 += a.a12*b.a14 + a.a22*b.a24 + a.a32*b.a34 + a.a42*b.a44 + a.a52*b.a54 + a.a62*b.a64;
+        c.a25 += a.a12*b.a15 + a.a22*b.a25 + a.a32*b.a35 + a.a42*b.a45 + a.a52*b.a55 + a.a62*b.a65;
+        c.a26 += a.a12*b.a16 + a.a22*b.a26 + a.a32*b.a36 + a.a42*b.a46 + a.a52*b.a56 + a.a62*b.a66;
+        c.a31 += a.a13*b.a11 + a.a23*b.a21 + a.a33*b.a31 + a.a43*b.a41 + a.a53*b.a51 + a.a63*b.a61;
+        c.a32 += a.a13*b.a12 + a.a23*b.a22 + a.a33*b.a32 + a.a43*b.a42 + a.a53*b.a52 + a.a63*b.a62;
+        c.a33 += a.a13*b.a13 + a.a23*b.a23 + a.a33*b.a33 + a.a43*b.a43 + a.a53*b.a53 + a.a63*b.a63;
+        c.a34 += a.a13*b.a14 + a.a23*b.a24 + a.a33*b.a34 + a.a43*b.a44 + a.a53*b.a54 + a.a63*b.a64;
+        c.a35 += a.a13*b.a15 + a.a23*b.a25 + a.a33*b.a35 + a.a43*b.a45 + a.a53*b.a55 + a.a63*b.a65;
+        c.a36 += a.a13*b.a16 + a.a23*b.a26 + a.a33*b.a36 + a.a43*b.a46 + a.a53*b.a56 + a.a63*b.a66;
+        c.a41 += a.a14*b.a11 + a.a24*b.a21 + a.a34*b.a31 + a.a44*b.a41 + a.a54*b.a51 + a.a64*b.a61;
+        c.a42 += a.a14*b.a12 + a.a24*b.a22 + a.a34*b.a32 + a.a44*b.a42 + a.a54*b.a52 + a.a64*b.a62;
+        c.a43 += a.a14*b.a13 + a.a24*b.a23 + a.a34*b.a33 + a.a44*b.a43 + a.a54*b.a53 + a.a64*b.a63;
+        c.a44 += a.a14*b.a14 + a.a24*b.a24 + a.a34*b.a34 + a.a44*b.a44 + a.a54*b.a54 + a.a64*b.a64;
+        c.a45 += a.a14*b.a15 + a.a24*b.a25 + a.a34*b.a35 + a.a44*b.a45 + a.a54*b.a55 + a.a64*b.a65;
+        c.a46 += a.a14*b.a16 + a.a24*b.a26 + a.a34*b.a36 + a.a44*b.a46 + a.a54*b.a56 + a.a64*b.a66;
+        c.a51 += a.a15*b.a11 + a.a25*b.a21 + a.a35*b.a31 + a.a45*b.a41 + a.a55*b.a51 + a.a65*b.a61;
+        c.a52 += a.a15*b.a12 + a.a25*b.a22 + a.a35*b.a32 + a.a45*b.a42 + a.a55*b.a52 + a.a65*b.a62;
+        c.a53 += a.a15*b.a13 + a.a25*b.a23 + a.a35*b.a33 + a.a45*b.a43 + a.a55*b.a53 + a.a65*b.a63;
+        c.a54 += a.a15*b.a14 + a.a25*b.a24 + a.a35*b.a34 + a.a45*b.a44 + a.a55*b.a54 + a.a65*b.a64;
+        c.a55 += a.a15*b.a15 + a.a25*b.a25 + a.a35*b.a35 + a.a45*b.a45 + a.a55*b.a55 + a.a65*b.a65;
+        c.a56 += a.a15*b.a16 + a.a25*b.a26 + a.a35*b.a36 + a.a45*b.a46 + a.a55*b.a56 + a.a65*b.a66;
+        c.a61 += a.a16*b.a11 + a.a26*b.a21 + a.a36*b.a31 + a.a46*b.a41 + a.a56*b.a51 + a.a66*b.a61;
+        c.a62 += a.a16*b.a12 + a.a26*b.a22 + a.a36*b.a32 + a.a46*b.a42 + a.a56*b.a52 + a.a66*b.a62;
+        c.a63 += a.a16*b.a13 + a.a26*b.a23 + a.a36*b.a33 + a.a46*b.a43 + a.a56*b.a53 + a.a66*b.a63;
+        c.a64 += a.a16*b.a14 + a.a26*b.a24 + a.a36*b.a34 + a.a46*b.a44 + a.a56*b.a54 + a.a66*b.a64;
+        c.a65 += a.a16*b.a15 + a.a26*b.a25 + a.a36*b.a35 + a.a46*b.a45 + a.a56*b.a55 + a.a66*b.a65;
+        c.a66 += a.a16*b.a16 + a.a26*b.a26 + a.a36*b.a36 + a.a46*b.a46 + a.a56*b.a56 + a.a66*b.a66;
+    }
+
+    /**
+     * <p>
+     * Performs the following operation:<br>
+     * <br>
+     * c += a<sup>T</sup> * b<sup>T</sup><br>
+     * c<sub>ij</sub> += &sum;<sub>k=1:n</sub> { a<sub>ki</sub> * b<sub>jk</sub>}
+     * </p>
+     *
+     * @param a The left matrix in the multiplication operation. Not modified.
+     * @param b The right matrix in the multiplication operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void multAddTransAB( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b , FixedMatrix6x6_64F c) {
+        c.a11 += a.a11*b.a11 + a.a21*b.a12 + a.a31*b.a13 + a.a41*b.a14 + a.a51*b.a15 + a.a61*b.a16;
+        c.a12 += a.a11*b.a21 + a.a21*b.a22 + a.a31*b.a23 + a.a41*b.a24 + a.a51*b.a25 + a.a61*b.a26;
+        c.a13 += a.a11*b.a31 + a.a21*b.a32 + a.a31*b.a33 + a.a41*b.a34 + a.a51*b.a35 + a.a61*b.a36;
+        c.a14 += a.a11*b.a41 + a.a21*b.a42 + a.a31*b.a43 + a.a41*b.a44 + a.a51*b.a45 + a.a61*b.a46;
+        c.a15 += a.a11*b.a51 + a.a21*b.a52 + a.a31*b.a53 + a.a41*b.a54 + a.a51*b.a55 + a.a61*b.a56;
+        c.a16 += a.a11*b.a61 + a.a21*b.a62 + a.a31*b.a63 + a.a41*b.a64 + a.a51*b.a65 + a.a61*b.a66;
+        c.a21 += a.a12*b.a11 + a.a22*b.a12 + a.a32*b.a13 + a.a42*b.a14 + a.a52*b.a15 + a.a62*b.a16;
+        c.a22 += a.a12*b.a21 + a.a22*b.a22 + a.a32*b.a23 + a.a42*b.a24 + a.a52*b.a25 + a.a62*b.a26;
+        c.a23 += a.a12*b.a31 + a.a22*b.a32 + a.a32*b.a33 + a.a42*b.a34 + a.a52*b.a35 + a.a62*b.a36;
+        c.a24 += a.a12*b.a41 + a.a22*b.a42 + a.a32*b.a43 + a.a42*b.a44 + a.a52*b.a45 + a.a62*b.a46;
+        c.a25 += a.a12*b.a51 + a.a22*b.a52 + a.a32*b.a53 + a.a42*b.a54 + a.a52*b.a55 + a.a62*b.a56;
+        c.a26 += a.a12*b.a61 + a.a22*b.a62 + a.a32*b.a63 + a.a42*b.a64 + a.a52*b.a65 + a.a62*b.a66;
+        c.a31 += a.a13*b.a11 + a.a23*b.a12 + a.a33*b.a13 + a.a43*b.a14 + a.a53*b.a15 + a.a63*b.a16;
+        c.a32 += a.a13*b.a21 + a.a23*b.a22 + a.a33*b.a23 + a.a43*b.a24 + a.a53*b.a25 + a.a63*b.a26;
+        c.a33 += a.a13*b.a31 + a.a23*b.a32 + a.a33*b.a33 + a.a43*b.a34 + a.a53*b.a35 + a.a63*b.a36;
+        c.a34 += a.a13*b.a41 + a.a23*b.a42 + a.a33*b.a43 + a.a43*b.a44 + a.a53*b.a45 + a.a63*b.a46;
+        c.a35 += a.a13*b.a51 + a.a23*b.a52 + a.a33*b.a53 + a.a43*b.a54 + a.a53*b.a55 + a.a63*b.a56;
+        c.a36 += a.a13*b.a61 + a.a23*b.a62 + a.a33*b.a63 + a.a43*b.a64 + a.a53*b.a65 + a.a63*b.a66;
+        c.a41 += a.a14*b.a11 + a.a24*b.a12 + a.a34*b.a13 + a.a44*b.a14 + a.a54*b.a15 + a.a64*b.a16;
+        c.a42 += a.a14*b.a21 + a.a24*b.a22 + a.a34*b.a23 + a.a44*b.a24 + a.a54*b.a25 + a.a64*b.a26;
+        c.a43 += a.a14*b.a31 + a.a24*b.a32 + a.a34*b.a33 + a.a44*b.a34 + a.a54*b.a35 + a.a64*b.a36;
+        c.a44 += a.a14*b.a41 + a.a24*b.a42 + a.a34*b.a43 + a.a44*b.a44 + a.a54*b.a45 + a.a64*b.a46;
+        c.a45 += a.a14*b.a51 + a.a24*b.a52 + a.a34*b.a53 + a.a44*b.a54 + a.a54*b.a55 + a.a64*b.a56;
+        c.a46 += a.a14*b.a61 + a.a24*b.a62 + a.a34*b.a63 + a.a44*b.a64 + a.a54*b.a65 + a.a64*b.a66;
+        c.a51 += a.a15*b.a11 + a.a25*b.a12 + a.a35*b.a13 + a.a45*b.a14 + a.a55*b.a15 + a.a65*b.a16;
+        c.a52 += a.a15*b.a21 + a.a25*b.a22 + a.a35*b.a23 + a.a45*b.a24 + a.a55*b.a25 + a.a65*b.a26;
+        c.a53 += a.a15*b.a31 + a.a25*b.a32 + a.a35*b.a33 + a.a45*b.a34 + a.a55*b.a35 + a.a65*b.a36;
+        c.a54 += a.a15*b.a41 + a.a25*b.a42 + a.a35*b.a43 + a.a45*b.a44 + a.a55*b.a45 + a.a65*b.a46;
+        c.a55 += a.a15*b.a51 + a.a25*b.a52 + a.a35*b.a53 + a.a45*b.a54 + a.a55*b.a55 + a.a65*b.a56;
+        c.a56 += a.a15*b.a61 + a.a25*b.a62 + a.a35*b.a63 + a.a45*b.a64 + a.a55*b.a65 + a.a65*b.a66;
+        c.a61 += a.a16*b.a11 + a.a26*b.a12 + a.a36*b.a13 + a.a46*b.a14 + a.a56*b.a15 + a.a66*b.a16;
+        c.a62 += a.a16*b.a21 + a.a26*b.a22 + a.a36*b.a23 + a.a46*b.a24 + a.a56*b.a25 + a.a66*b.a26;
+        c.a63 += a.a16*b.a31 + a.a26*b.a32 + a.a36*b.a33 + a.a46*b.a34 + a.a56*b.a35 + a.a66*b.a36;
+        c.a64 += a.a16*b.a41 + a.a26*b.a42 + a.a36*b.a43 + a.a46*b.a44 + a.a56*b.a45 + a.a66*b.a46;
+        c.a65 += a.a16*b.a51 + a.a26*b.a52 + a.a36*b.a53 + a.a46*b.a54 + a.a56*b.a55 + a.a66*b.a56;
+        c.a66 += a.a16*b.a61 + a.a26*b.a62 + a.a36*b.a63 + a.a46*b.a64 + a.a56*b.a65 + a.a66*b.a66;
+    }
+
+    /**
+     * <p>
+     * Performs the following operation:<br>
+     * <br>
+     * c += a * b<sup>T</sup> <br>
+     * c<sub>ij</sub> += &sum;<sub>k=1:n</sub> { a<sub>ik</sub> * b<sub>jk</sub>}
+     * </p>
+     *
+     * @param a The left matrix in the multiplication operation. Not modified.
+     * @param b The right matrix in the multiplication operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void multAddTransB( FixedMatrix6x6_64F a , FixedMatrix6x6_64F b , FixedMatrix6x6_64F c) {
+        c.a11 += a.a11*b.a11 + a.a12*b.a12 + a.a13*b.a13 + a.a14*b.a14 + a.a15*b.a15 + a.a16*b.a16;
+        c.a12 += a.a11*b.a21 + a.a12*b.a22 + a.a13*b.a23 + a.a14*b.a24 + a.a15*b.a25 + a.a16*b.a26;
+        c.a13 += a.a11*b.a31 + a.a12*b.a32 + a.a13*b.a33 + a.a14*b.a34 + a.a15*b.a35 + a.a16*b.a36;
+        c.a14 += a.a11*b.a41 + a.a12*b.a42 + a.a13*b.a43 + a.a14*b.a44 + a.a15*b.a45 + a.a16*b.a46;
+        c.a15 += a.a11*b.a51 + a.a12*b.a52 + a.a13*b.a53 + a.a14*b.a54 + a.a15*b.a55 + a.a16*b.a56;
+        c.a16 += a.a11*b.a61 + a.a12*b.a62 + a.a13*b.a63 + a.a14*b.a64 + a.a15*b.a65 + a.a16*b.a66;
+        c.a21 += a.a21*b.a11 + a.a22*b.a12 + a.a23*b.a13 + a.a24*b.a14 + a.a25*b.a15 + a.a26*b.a16;
+        c.a22 += a.a21*b.a21 + a.a22*b.a22 + a.a23*b.a23 + a.a24*b.a24 + a.a25*b.a25 + a.a26*b.a26;
+        c.a23 += a.a21*b.a31 + a.a22*b.a32 + a.a23*b.a33 + a.a24*b.a34 + a.a25*b.a35 + a.a26*b.a36;
+        c.a24 += a.a21*b.a41 + a.a22*b.a42 + a.a23*b.a43 + a.a24*b.a44 + a.a25*b.a45 + a.a26*b.a46;
+        c.a25 += a.a21*b.a51 + a.a22*b.a52 + a.a23*b.a53 + a.a24*b.a54 + a.a25*b.a55 + a.a26*b.a56;
+        c.a26 += a.a21*b.a61 + a.a22*b.a62 + a.a23*b.a63 + a.a24*b.a64 + a.a25*b.a65 + a.a26*b.a66;
+        c.a31 += a.a31*b.a11 + a.a32*b.a12 + a.a33*b.a13 + a.a34*b.a14 + a.a35*b.a15 + a.a36*b.a16;
+        c.a32 += a.a31*b.a21 + a.a32*b.a22 + a.a33*b.a23 + a.a34*b.a24 + a.a35*b.a25 + a.a36*b.a26;
+        c.a33 += a.a31*b.a31 + a.a32*b.a32 + a.a33*b.a33 + a.a34*b.a34 + a.a35*b.a35 + a.a36*b.a36;
+        c.a34 += a.a31*b.a41 + a.a32*b.a42 + a.a33*b.a43 + a.a34*b.a44 + a.a35*b.a45 + a.a36*b.a46;
+        c.a35 += a.a31*b.a51 + a.a32*b.a52 + a.a33*b.a53 + a.a34*b.a54 + a.a35*b.a55 + a.a36*b.a56;
+        c.a36 += a.a31*b.a61 + a.a32*b.a62 + a.a33*b.a63 + a.a34*b.a64 + a.a35*b.a65 + a.a36*b.a66;
+        c.a41 += a.a41*b.a11 + a.a42*b.a12 + a.a43*b.a13 + a.a44*b.a14 + a.a45*b.a15 + a.a46*b.a16;
+        c.a42 += a.a41*b.a21 + a.a42*b.a22 + a.a43*b.a23 + a.a44*b.a24 + a.a45*b.a25 + a.a46*b.a26;
+        c.a43 += a.a41*b.a31 + a.a42*b.a32 + a.a43*b.a33 + a.a44*b.a34 + a.a45*b.a35 + a.a46*b.a36;
+        c.a44 += a.a41*b.a41 + a.a42*b.a42 + a.a43*b.a43 + a.a44*b.a44 + a.a45*b.a45 + a.a46*b.a46;
+        c.a45 += a.a41*b.a51 + a.a42*b.a52 + a.a43*b.a53 + a.a44*b.a54 + a.a45*b.a55 + a.a46*b.a56;
+        c.a46 += a.a41*b.a61 + a.a42*b.a62 + a.a43*b.a63 + a.a44*b.a64 + a.a45*b.a65 + a.a46*b.a66;
+        c.a51 += a.a51*b.a11 + a.a52*b.a12 + a.a53*b.a13 + a.a54*b.a14 + a.a55*b.a15 + a.a56*b.a16;
+        c.a52 += a.a51*b.a21 + a.a52*b.a22 + a.a53*b.a23 + a.a54*b.a24 + a.a55*b.a25 + a.a56*b.a26;
+        c.a53 += a.a51*b.a31 + a.a52*b.a32 + a.a53*b.a33 + a.a54*b.a34 + a.a55*b.a35 + a.a56*b.a36;
+        c.a54 += a.a51*b.a41 + a.a52*b.a42 + a.a53*b.a43 + a.a54*b.a44 + a.a55*b.a45 + a.a56*b.a46;
+        c.a55 += a.a51*b.a51 + a.a52*b.a52 + a.a53*b.a53 + a.a54*b.a54 + a.a55*b.a55 + a.a56*b.a56;
+        c.a56 += a.a51*b.a61 + a.a52*b.a62 + a.a53*b.a63 + a.a54*b.a64 + a.a55*b.a65 + a.a56*b.a66;
+        c.a61 += a.a61*b.a11 + a.a62*b.a12 + a.a63*b.a13 + a.a64*b.a14 + a.a65*b.a15 + a.a66*b.a16;
+        c.a62 += a.a61*b.a21 + a.a62*b.a22 + a.a63*b.a23 + a.a64*b.a24 + a.a65*b.a25 + a.a66*b.a26;
+        c.a63 += a.a61*b.a31 + a.a62*b.a32 + a.a63*b.a33 + a.a64*b.a34 + a.a65*b.a35 + a.a66*b.a36;
+        c.a64 += a.a61*b.a41 + a.a62*b.a42 + a.a63*b.a43 + a.a64*b.a44 + a.a65*b.a45 + a.a66*b.a46;
+        c.a65 += a.a61*b.a51 + a.a62*b.a52 + a.a63*b.a53 + a.a64*b.a54 + a.a65*b.a55 + a.a66*b.a56;
+        c.a66 += a.a61*b.a61 + a.a62*b.a62 + a.a63*b.a63 + a.a64*b.a64 + a.a65*b.a65 + a.a66*b.a66;
+    }
+
+    /**
      * <p>Performs matrix to vector multiplication:<br>
      * <br>
      * c = a * b <br>
@@ -577,6 +969,27 @@ public class FixedOps6 {
 
     /**
      * <p>
+     * Returns the value of the element in the vector that has the largest value.<br>
+     * <br>
+     * Max{ a<sub>i</sub> } for all i<br>
+     * </p>
+     *
+     * @param a A vector. Not modified.
+     * @return The max element value of the matrix.
+     */
+    public static double elementMax( FixedMatrix6_64F a ) {
+        double max = a.a1;
+        max = Math.max(max,a.a2);
+        max = Math.max(max,a.a3);
+        max = Math.max(max,a.a4);
+        max = Math.max(max,a.a5);
+        max = Math.max(max,a.a6);
+
+        return max;
+    }
+
+    /**
+     * <p>
      * Returns the absolute value of the element in the matrix that has the largest absolute value.<br>
      * <br>
      * Max{ |a<sub>ij</sub>| } for all i and j<br>
@@ -628,6 +1041,27 @@ public class FixedOps6 {
 
     /**
      * <p>
+     * Returns the absolute value of the element in the vector that has the largest absolute value.<br>
+     * <br>
+     * Max{ |a<sub>i</sub>| } for all i<br>
+     * </p>
+     *
+     * @param a A matrix. Not modified.
+     * @return The max abs element value of the vector.
+     */
+    public static double elementMaxAbs( FixedMatrix6_64F a ) {
+        double max = a.a1;
+        max = Math.max(max,Math.abs(a.a2));
+        max = Math.max(max,Math.abs(a.a3));
+        max = Math.max(max,Math.abs(a.a4));
+        max = Math.max(max,Math.abs(a.a5));
+        max = Math.max(max,Math.abs(a.a6));
+
+        return max;
+    }
+
+    /**
+     * <p>
      * Returns the value of the element in the matrix that has the minimum value.<br>
      * <br>
      * Min{ a<sub>ij</sub> } for all i and j<br>
@@ -638,41 +1072,62 @@ public class FixedOps6 {
      */
     public static double elementMin( FixedMatrix6x6_64F a ) {
         double min = a.a11;
-        min = Math.min(min,a.a12);
-        min = Math.min(min,a.a13);
-        min = Math.min(min,a.a14);
-        min = Math.min(min,a.a15);
-        min = Math.min(min,a.a16);
-        min = Math.min(min,a.a21);
-        min = Math.min(min,a.a22);
-        min = Math.min(min,a.a23);
-        min = Math.min(min,a.a24);
-        min = Math.min(min,a.a25);
-        min = Math.min(min,a.a26);
-        min = Math.min(min,a.a31);
-        min = Math.min(min,a.a32);
-        min = Math.min(min,a.a33);
-        min = Math.min(min,a.a34);
-        min = Math.min(min,a.a35);
-        min = Math.min(min,a.a36);
-        min = Math.min(min,a.a41);
-        min = Math.min(min,a.a42);
-        min = Math.min(min,a.a43);
-        min = Math.min(min,a.a44);
-        min = Math.min(min,a.a45);
-        min = Math.min(min,a.a46);
-        min = Math.min(min,a.a51);
-        min = Math.min(min,a.a52);
-        min = Math.min(min,a.a53);
-        min = Math.min(min,a.a54);
-        min = Math.min(min,a.a55);
-        min = Math.min(min,a.a56);
-        min = Math.min(min,a.a61);
-        min = Math.min(min,a.a62);
-        min = Math.min(min,a.a63);
-        min = Math.min(min,a.a64);
-        min = Math.min(min,a.a65);
-        min = Math.min(min,a.a66);
+        min = Math.min(min, a.a12);
+        min = Math.min(min, a.a13);
+        min = Math.min(min, a.a14);
+        min = Math.min(min, a.a15);
+        min = Math.min(min, a.a16);
+        min = Math.min(min, a.a21);
+        min = Math.min(min, a.a22);
+        min = Math.min(min, a.a23);
+        min = Math.min(min, a.a24);
+        min = Math.min(min, a.a25);
+        min = Math.min(min, a.a26);
+        min = Math.min(min, a.a31);
+        min = Math.min(min, a.a32);
+        min = Math.min(min, a.a33);
+        min = Math.min(min, a.a34);
+        min = Math.min(min, a.a35);
+        min = Math.min(min, a.a36);
+        min = Math.min(min, a.a41);
+        min = Math.min(min, a.a42);
+        min = Math.min(min, a.a43);
+        min = Math.min(min, a.a44);
+        min = Math.min(min, a.a45);
+        min = Math.min(min, a.a46);
+        min = Math.min(min, a.a51);
+        min = Math.min(min, a.a52);
+        min = Math.min(min, a.a53);
+        min = Math.min(min, a.a54);
+        min = Math.min(min, a.a55);
+        min = Math.min(min, a.a56);
+        min = Math.min(min, a.a61);
+        min = Math.min(min, a.a62);
+        min = Math.min(min, a.a63);
+        min = Math.min(min, a.a64);
+        min = Math.min(min, a.a65);
+        min = Math.min(min, a.a66);
+
+        return min;
+    }
+
+    /**
+     * <p>
+     * Returns the value of the element in the vector that has the minimum value.<br>
+     * <br>
+     * Min{ a<sub>i</sub> } for all<br>
+     * </p>
+     *
+     * @param a A matrix. Not modified.
+     * @return The value of element in the vector with the minimum value.
+     */
+    public static double elementMin( FixedMatrix6_64F a ) {
+        double min = a.a1;
+        min = Math.min(min, a.a2);
+        min = Math.min(min, a.a3);
+        min = Math.min(min, a.a4);
+        min = Math.min(min, a.a5);
+        min = Math.min(min, a.a6);
 
         return min;
     }
@@ -729,7 +1184,28 @@ public class FixedOps6 {
     }
 
     /**
-     * <p>Performs the an element by element multiplication operation:<br>
+     * <p>
+     * Returns the absolute value of the element in the vector that has the smallest absolute value.<br>
+     * <br>
+     * Min{ |a<sub>i</sub>| } for all i<br>
+     * </p>
+     *
+     * @param a A matrix. Not modified.
+     * @return The max element value of the vector.
+     */
+    public static double elementMinAbs( FixedMatrix6_64F a ) {
+        double min = a.a1;
+        min = Math.min(min,Math.abs(a.a2));
+        min = Math.min(min,Math.abs(a.a3));
+        min = Math.min(min,Math.abs(a.a4));
+        min = Math.min(min,Math.abs(a.a5));
+        min = Math.min(min,Math.abs(a.a6));
+
+        return min;
+    }
+
+    /**
+     * <p>Performs an element by element multiplication operation:<br>
      * <br>
      * a<sub>ij</sub> = a<sub>ij</sub> * b<sub>ij</sub> <br>
      * </p>
@@ -746,7 +1222,24 @@ public class FixedOps6 {
     }
 
     /**
-     * <p>Performs the an element by element multiplication operation:<br>
+     * <p>Performs an element by element multiplication operation:<br>
+     * <br>
+     * a<sub>i</sub> = a<sub>i</sub> * b<sub>i</sub> <br>
+     * </p>
+     * @param a The left vector in the multiplication operation. Modified.
+     * @param b The right vector in the multiplication operation. Not modified.
+     */
+    public static void elementMult( FixedMatrix6_64F a , FixedMatrix6_64F b) {
+        a.a1 *= b.a1;
+        a.a2 *= b.a2;
+        a.a3 *= b.a3;
+        a.a4 *= b.a4;
+        a.a5 *= b.a5;
+        a.a6 *= b.a6;
+    }
+
+    /**
+     * <p>Performs an element by element multiplication operation:<br>
      * <br>
      * c<sub>ij</sub> = a<sub>ij</sub> * b<sub>ij</sub> <br>
      * </p>
@@ -764,7 +1257,25 @@ public class FixedOps6 {
     }
 
     /**
-     * <p>Performs the an element by element division operation:<br>
+     * <p>Performs an element by element multiplication operation:<br>
+     * <br>
+     * c<sub>i</sub> = a<sub>i</sub> * b<sub>j</sub> <br>
+     * </p>
+     * @param a The left vector in the multiplication operation. Not modified.
+     * @param b The right vector in the multiplication operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void elementMult( FixedMatrix6_64F a , FixedMatrix6_64F b , FixedMatrix6_64F c ) {
+        c.a1 = a.a1*b.a1;
+        c.a2 = a.a2*b.a2;
+        c.a3 = a.a3*b.a3;
+        c.a4 = a.a4*b.a4;
+        c.a5 = a.a5*b.a5;
+        c.a6 = a.a6*b.a6;
+    }
+
+    /**
+     * <p>Performs an element by element division operation:<br>
      * <br>
      * a<sub>ij</sub> = a<sub>ij</sub> / b<sub>ij</sub> <br>
      * </p>
@@ -781,7 +1292,24 @@ public class FixedOps6 {
     }
 
     /**
-     * <p>Performs the an element by element division operation:<br>
+     * <p>Performs an element by element division operation:<br>
+     * <br>
+     * a<sub>i</sub> = a<sub>i</sub> / b<sub>i</sub> <br>
+     * </p>
+     * @param a The left vector in the division operation. Modified.
+     * @param b The right vector in the division operation. Not modified.
+     */
+    public static void elementDiv( FixedMatrix6_64F a , FixedMatrix6_64F b) {
+        a.a1 /= b.a1;
+        a.a2 /= b.a2;
+        a.a3 /= b.a3;
+        a.a4 /= b.a4;
+        a.a5 /= b.a5;
+        a.a6 /= b.a6;
+    }
+
+    /**
+     * <p>Performs an element by element division operation:<br>
      * <br>
      * c<sub>ij</sub> = a<sub>ij</sub> / b<sub>ij</sub> <br>
      * </p>
@@ -796,6 +1324,24 @@ public class FixedOps6 {
         c.a41 = a.a41/b.a41; c.a42 = a.a42/b.a42; c.a43 = a.a43/b.a43; c.a44 = a.a44/b.a44; c.a45 = a.a45/b.a45; c.a46 = a.a46/b.a46;
         c.a51 = a.a51/b.a51; c.a52 = a.a52/b.a52; c.a53 = a.a53/b.a53; c.a54 = a.a54/b.a54; c.a55 = a.a55/b.a55; c.a56 = a.a56/b.a56;
         c.a61 = a.a61/b.a61; c.a62 = a.a62/b.a62; c.a63 = a.a63/b.a63; c.a64 = a.a64/b.a64; c.a65 = a.a65/b.a65; c.a66 = a.a66/b.a66;
+    }
+
+    /**
+     * <p>Performs an element by element division operation:<br>
+     * <br>
+     * c<sub>i</sub> = a<sub>i</sub> / b<sub>i</sub> <br>
+     * </p>
+     * @param a The left vector in the division operation. Not modified.
+     * @param b The right vector in the division operation. Not modified.
+     * @param c Where the results of the operation are stored. Modified.
+     */
+    public static void elementDiv( FixedMatrix6_64F a , FixedMatrix6_64F b , FixedMatrix6_64F c ) {
+        c.a1 = a.a1/b.a1;
+        c.a2 = a.a2/b.a2;
+        c.a3 = a.a3/b.a3;
+        c.a4 = a.a4/b.a4;
+        c.a5 = a.a5/b.a5;
+        c.a6 = a.a6/b.a6;
     }
 
     /**
@@ -815,6 +1361,25 @@ public class FixedOps6 {
         a.a41 *= alpha; a.a42 *= alpha; a.a43 *= alpha; a.a44 *= alpha; a.a45 *= alpha; a.a46 *= alpha;
         a.a51 *= alpha; a.a52 *= alpha; a.a53 *= alpha; a.a54 *= alpha; a.a55 *= alpha; a.a56 *= alpha;
         a.a61 *= alpha; a.a62 *= alpha; a.a63 *= alpha; a.a64 *= alpha; a.a65 *= alpha; a.a66 *= alpha;
+    }
+
+    /**
+     * <p>
+     * Performs an in-place element by element scalar multiplication.<br>
+     * <br>
+     * a<sub>ij</sub> = &alpha;*a<sub>ij</sub>
+     * </p>
+     *
+     * @param a The vector that is to be scaled.  Modified.
+     * @param alpha the amount each element is multiplied by.
+     */
+    public static void scale( double alpha , FixedMatrix6_64F a ) {
+        a.a1 *= alpha;
+        a.a2 *= alpha;
+        a.a3 *= alpha;
+        a.a4 *= alpha;
+        a.a5 *= alpha;
+        a.a6 *= alpha;
     }
 
     /**
@@ -839,6 +1404,26 @@ public class FixedOps6 {
 
     /**
      * <p>
+     * Performs an element by element scalar multiplication.<br>
+     * <br>
+     * b<sub>i</sub> = &alpha;*a<sub>i</sub>
+     * </p>
+     *
+     * @param alpha the amount each element is multiplied by.
+     * @param a The vector that is to be scaled.  Not modified.
+     * @param b Where the scaled matrix is stored. Modified.
+     */
+    public static void scale( double alpha , FixedMatrix6_64F a , FixedMatrix6_64F b ) {
+        b.a1 = a.a1*alpha;
+        b.a2 = a.a2*alpha;
+        b.a3 = a.a3*alpha;
+        b.a4 = a.a4*alpha;
+        b.a5 = a.a5*alpha;
+        b.a6 = a.a6*alpha;
+    }
+
+    /**
+     * <p>
      * Performs an in-place element by element scalar division. Scalar denominator.<br>
      * <br>
      * a<sub>ij</sub> = a<sub>ij</sub>/&alpha;
@@ -858,9 +1443,28 @@ public class FixedOps6 {
 
     /**
      * <p>
+     * Performs an in-place element by element scalar division. Scalar denominator.<br>
+     * <br>
+     * a<sub>i</sub> = a<sub>i</sub>/&alpha;
+     * </p>
+     *
+     * @param a The vector whose elements are to be divided.  Modified.
+     * @param alpha the amount each element is divided by.
+     */
+    public static void divide( FixedMatrix6_64F a , double alpha ) {
+        a.a1 /= alpha;
+        a.a2 /= alpha;
+        a.a3 /= alpha;
+        a.a4 /= alpha;
+        a.a5 /= alpha;
+        a.a6 /= alpha;
+    }
+
+    /**
+     * <p>
      * Performs an element by element scalar division.  Scalar denominator.<br>
      * <br>
-     * b<sub>ij</sub> = *a<sub>ij</sub> /&alpha;
+     * b<sub>ij</sub> = a<sub>ij</sub> /&alpha;
      * </p>
      *
      * @param alpha the amount each element is divided by.
@@ -874,6 +1478,26 @@ public class FixedOps6 {
         b.a41 = a.a41/alpha; b.a42 = a.a42/alpha; b.a43 = a.a43/alpha; b.a44 = a.a44/alpha; b.a45 = a.a45/alpha; b.a46 = a.a46/alpha;
         b.a51 = a.a51/alpha; b.a52 = a.a52/alpha; b.a53 = a.a53/alpha; b.a54 = a.a54/alpha; b.a55 = a.a55/alpha; b.a56 = a.a56/alpha;
         b.a61 = a.a61/alpha; b.a62 = a.a62/alpha; b.a63 = a.a63/alpha; b.a64 = a.a64/alpha; b.a65 = a.a65/alpha; b.a66 = a.a66/alpha;
+    }
+
+    /**
+     * <p>
+     * Performs an element by element scalar division.  Scalar denominator.<br>
+     * <br>
+     * b<sub>i</sub> = a<sub>i</sub> /&alpha;
+     * </p>
+     *
+     * @param alpha the amount each element is divided by.
+     * @param a The vector whose elements are to be divided.  Not modified.
+     * @param b Where the results are stored. Modified.
+     */
+    public static void divide( FixedMatrix6_64F a , double alpha , FixedMatrix6_64F b ) {
+        b.a1 = a.a1/alpha;
+        b.a2 = a.a2/alpha;
+        b.a3 = a.a3/alpha;
+        b.a4 = a.a4/alpha;
+        b.a5 = a.a5/alpha;
+        b.a6 = a.a6/alpha;
     }
 
     /**
@@ -897,6 +1521,25 @@ public class FixedOps6 {
 
     /**
      * <p>
+     * Changes the sign of every element in the vector.<br>
+     * <br>
+     * a<sub>i</sub> = -a<sub>i</sub>
+     * </p>
+     *
+     * @param a A vector. Modified.
+     */
+    public static void changeSign( FixedMatrix6_64F a )
+    {
+        a.a1 = -a.a1;
+        a.a2 = -a.a2;
+        a.a3 = -a.a3;
+        a.a4 = -a.a4;
+        a.a5 = -a.a5;
+        a.a6 = -a.a6;
+    }
+
+    /**
+     * <p>
      * Sets every element in the matrix to the specified value.<br>
      * <br>
      * a<sub>ij</sub> = value
@@ -912,6 +1555,153 @@ public class FixedOps6 {
         a.a41 = v; a.a42 = v; a.a43 = v; a.a44 = v; a.a45 = v; a.a46 = v;
         a.a51 = v; a.a52 = v; a.a53 = v; a.a54 = v; a.a55 = v; a.a56 = v;
         a.a61 = v; a.a62 = v; a.a63 = v; a.a64 = v; a.a65 = v; a.a66 = v;
+    }
+
+    /**
+     * <p>
+     * Sets every element in the vector to the specified value.<br>
+     * <br>
+     * a<sub>i</sub> = value
+     * <p>
+     *
+     * @param a A vector whose elements are about to be set. Modified.
+     * @param v The value each element will have.
+     */
+    public static void fill( FixedMatrix6_64F a , double v  ) {
+        a.a1 = v;
+        a.a2 = v;
+        a.a3 = v;
+        a.a4 = v;
+        a.a5 = v;
+        a.a6 = v;
+    }
+
+    /**
+     * Extracts the row from the matrix a.
+     * @param a Input matrix
+     * @param row Which row is to be extracted
+     * @param out output. Storage for the extracted row. If null then a new vector will be returned.
+     * @return The extracted row.
+     */
+    public static FixedMatrix6_64F extractRow( FixedMatrix6x6_64F a , int row , FixedMatrix6_64F out ) {
+        if( out == null) out = new FixedMatrix6_64F();
+        switch( row ) {
+            case 0:
+                out.a1 = a.a11;
+                out.a2 = a.a12;
+                out.a3 = a.a13;
+                out.a4 = a.a14;
+                out.a5 = a.a15;
+                out.a6 = a.a16;
+            break;
+            case 1:
+                out.a1 = a.a21;
+                out.a2 = a.a22;
+                out.a3 = a.a23;
+                out.a4 = a.a24;
+                out.a5 = a.a25;
+                out.a6 = a.a26;
+            break;
+            case 2:
+                out.a1 = a.a31;
+                out.a2 = a.a32;
+                out.a3 = a.a33;
+                out.a4 = a.a34;
+                out.a5 = a.a35;
+                out.a6 = a.a36;
+            break;
+            case 3:
+                out.a1 = a.a41;
+                out.a2 = a.a42;
+                out.a3 = a.a43;
+                out.a4 = a.a44;
+                out.a5 = a.a45;
+                out.a6 = a.a46;
+            break;
+            case 4:
+                out.a1 = a.a51;
+                out.a2 = a.a52;
+                out.a3 = a.a53;
+                out.a4 = a.a54;
+                out.a5 = a.a55;
+                out.a6 = a.a56;
+            break;
+            case 5:
+                out.a1 = a.a61;
+                out.a2 = a.a62;
+                out.a3 = a.a63;
+                out.a4 = a.a64;
+                out.a5 = a.a65;
+                out.a6 = a.a66;
+            break;
+            default:
+                throw new IllegalArgumentException("Out of bounds row.  row = "+row);
+        }
+        return out;
+    }
+
+    /**
+     * Extracts the column from the matrix a.
+     * @param a Input matrix
+     * @param column Which column is to be extracted
+     * @param out output. Storage for the extracted column. If null then a new vector will be returned.
+     * @return The extracted column.
+     */
+    public static FixedMatrix6_64F extractColumn( FixedMatrix6x6_64F a , int column , FixedMatrix6_64F out ) {
+        if( out == null) out = new FixedMatrix6_64F();
+        switch( column ) {
+            case 0:
+                out.a1 = a.a11;
+                out.a2 = a.a21;
+                out.a3 = a.a31;
+                out.a4 = a.a41;
+                out.a5 = a.a51;
+                out.a6 = a.a61;
+            break;
+            case 1:
+                out.a1 = a.a12;
+                out.a2 = a.a22;
+                out.a3 = a.a32;
+                out.a4 = a.a42;
+                out.a5 = a.a52;
+                out.a6 = a.a62;
+            break;
+            case 2:
+                out.a1 = a.a13;
+                out.a2 = a.a23;
+                out.a3 = a.a33;
+                out.a4 = a.a43;
+                out.a5 = a.a53;
+                out.a6 = a.a63;
+            break;
+            case 3:
+                out.a1 = a.a14;
+                out.a2 = a.a24;
+                out.a3 = a.a34;
+                out.a4 = a.a44;
+                out.a5 = a.a54;
+                out.a6 = a.a64;
+            break;
+            case 4:
+                out.a1 = a.a15;
+                out.a2 = a.a25;
+                out.a3 = a.a35;
+                out.a4 = a.a45;
+                out.a5 = a.a55;
+                out.a6 = a.a65;
+            break;
+            case 5:
+                out.a1 = a.a16;
+                out.a2 = a.a26;
+                out.a3 = a.a36;
+                out.a4 = a.a46;
+                out.a5 = a.a56;
+                out.a6 = a.a66;
+            break;
+            default:
+                throw new IllegalArgumentException("Out of bounds column.  column = "+column);
+        }
+        return out;
     }
 
 }

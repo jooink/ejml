@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -19,27 +19,12 @@
 package org.ejml.equation;
 
 /**
- * Variables which have special meanings depending on other matrices
+ * Exception generated for parse errors in {@link Equation}
  *
  * @author Peter Abeles
  */
-public class VariableSpecial extends Variable {
-
-    Special type;
-
-    protected VariableSpecial( Special special) {
-        super(VariableType.SPECIAL);
-        this.type = special;
-    }
-
-    public Special getValue() {
-        return type;
-    }
-
-    public static enum Special {
-        /** Maximum possible value */
-        END,
-        /** All values */
-        ALL
+public class ParseError extends RuntimeException {
+    public ParseError(String message) {
+        super(message);
     }
 }

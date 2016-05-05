@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -263,6 +263,12 @@ public class ManagerFunctions {
                 return Operation.log(A, manager);
             }
         });
+        input1.put("sqrt",new Input1() {
+            @Override
+            public Operation.Info create(Variable A, ManagerTempVariables manager) {
+                return Operation.sqrt(A, manager);
+            }
+        });
 
         inputN.put("zeros",new InputN() {
             @Override
@@ -324,6 +330,13 @@ public class ManagerFunctions {
             @Override
             public Operation.Info create(List<Variable> inputs, ManagerTempVariables manager) {
                 return Operation.extract(inputs, manager);
+            }
+        });
+        inputN.put("extractScalar",new InputN() {
+            @Override
+            public Operation.Info create(List<Variable> inputs, ManagerTempVariables manager) {
+                if( inputs.size() != 2 && inputs.size() != 3 ) throw new RuntimeException("Two or three inputs expected");
+                return Operation.extractScalar(inputs, manager);
             }
         });
     }

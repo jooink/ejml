@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -26,6 +26,7 @@ import org.ejml.ops.CommonOps;
 import org.ejml.ops.MatrixFeatures;
 import org.ejml.ops.NormOps;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -154,7 +155,7 @@ public abstract class Operation {
                 @Override
                 public void process() {
                     output.matrix.reshape(m.matrix.numRows,m.matrix.numCols);
-                    CommonOps.divide(s.getDouble(),m.matrix,output.matrix);
+                    CommonOps.divide(s.getDouble(), m.matrix, output.matrix);
                 }
             };
         } else if( A instanceof VariableInteger && B instanceof VariableInteger ) {
@@ -241,7 +242,7 @@ public abstract class Operation {
                     double a = ((VariableScalar)A).getDouble();
                     double b = ((VariableScalar)B).getDouble();
 
-                    output.value = Math.pow(a,b);
+                    output.value = Math.pow(a, b);
                 }
             };
         } else {
@@ -409,7 +410,7 @@ public abstract class Operation {
                     DenseMatrix64F a = ((VariableMatrix)A).matrix;
                     DenseMatrix64F out = ((VariableMatrix)ret.output).matrix;
                     out.reshape(a.numRows,a.numCols);
-                    CommonOps.elementLog(a,out);
+                    CommonOps.elementLog(a, out);
                 }
             };
         } else {
@@ -714,13 +715,27 @@ public abstract class Operation {
                 }
             };
         }
-        throw new RuntimeException("Copy type miss-match src = "+src.getClass().getSimpleName()+" dst = "+dst.getClass().getSimpleName());
+
+        if( src instanceof VariableIntegerSequence ) {
+            if( dst instanceof VariableIntegerSequence ) {
+                return new Operation("copy-is-is") {
+                    @Override
+                    public void process() {
+                        ((VariableIntegerSequence)dst).sequence = ((VariableIntegerSequence)src).sequence;
+                    }
+                };
+            }
+        }
+
+        throw new RuntimeException("Unsupported copy types; src = "+src.getClass().getSimpleName()+" dst = "+dst.getClass().getSimpleName());
     }
 
     public static Operation copy( final Variable src , final Variable dst , final List<Variable> range ) {
         if( src instanceof VariableMatrix && dst instanceof VariableMatrix ) {
             return new Operation("copyR-mm") {
                 Extents extents = new Extents();
+                ArrayExtent rowExtent = new ArrayExtent();
+                ArrayExtent colExtent = new ArrayExtent();
 
                 @Override
                 public void process() {
@@ -728,19 +743,50 @@ public abstract class Operation {
                     DenseMatrix64F msrc = ((VariableMatrix) src).matrix;
                     DenseMatrix64F mdst = ((VariableMatrix) dst).matrix;
 
-                    findExtents(mdst, range, 0, extents);
+                    if( range.size() == 1 ) {
+                        if( !MatrixFeatures.isVector(msrc) ) {
+                            throw new ParseError("Source must be a vector for copy into elements");
+                        }
+                        if(extractSimpleExtents(range.get(0),extents,false,mdst.getNumElements())) {
+                            int length = extents.col1-extents.col0+1;
+                            if( msrc.getNumElements() != length )
+                                throw new IllegalArgumentException("Source vector not the right length.");
+                            if( extents.col1+1 > mdst.getNumElements() )
+                                throw new IllegalArgumentException("Requested range is outside of dst length");
+                            System.arraycopy(msrc.data,0,mdst.data,extents.col0,length);
+                        } else {
+                            extractArrayExtent(range.get(0),mdst.getNumElements(),colExtent);
+                            if( colExtent.length > msrc.getNumElements() )
+                                throw new IllegalArgumentException("src doesn't have enough elements");
+                            for (int i = 0; i < colExtent.length; i++) {
+                                mdst.data[colExtent.array[i]] = msrc.data[i];
+                            }
+                        }
+                    } else if( range.size() == 2 ) {
+                        if(extractSimpleExtents(range.get(0),extents,true,mdst.getNumRows()) &&
+                                extractSimpleExtents(range.get(1),extents,false,mdst.getNumCols()) ) {
 
-                    if (extents.col1 - extents.col0 != msrc.numCols)
-                        throw new RuntimeException("Columns don't match");
-                    if (extents.row1 - extents.row0 != msrc.numRows)
-                        throw new RuntimeException("Rows don't match");
+                            int numRows = extents.row1 - extents.row0 + 1;
+                            int numCols = extents.col1 - extents.col0 + 1;
 
-                    CommonOps.insert(msrc, mdst, extents.row0, extents.col0);
+                            CommonOps.extract(msrc, 0, numRows, 0, numCols, mdst, extents.row0, extents.col0);
+                        } else {
+                            extractArrayExtent(range.get(0),mdst.numRows,rowExtent);
+                            extractArrayExtent(range.get(1),mdst.numCols,colExtent);
+
+                            CommonOps.insert(msrc, mdst, rowExtent.array, rowExtent.length,
+                                    colExtent.array, colExtent.length);
+                        }
+                    } else {
+                        throw new RuntimeException("Unexpected number of ranges.  Should have been caught earlier");
+                    }
                 }
             };
         } else if( src instanceof VariableScalar && dst instanceof VariableMatrix ) {
             return new Operation("copyR-sm") {
                 Extents extents = new Extents();
+                ArrayExtent rowExtent = new ArrayExtent();
+                ArrayExtent colExtent = new ArrayExtent();
 
                 @Override
                 public void process() {
@@ -748,18 +794,40 @@ public abstract class Operation {
                     double msrc = ((VariableScalar)src).getDouble();
                     DenseMatrix64F mdst = ((VariableMatrix)dst).matrix;
 
-                    findExtents(mdst,range,0,extents);
-
-                    if( !mdst.isInBounds(extents.col0,extents.row0))
-                        throw new RuntimeException("Submatrix out of bounds. Lower extent");
-                    if( !mdst.isInBounds(extents.col1-1,extents.row1-1))
-                        throw new RuntimeException("Submatrix out of bounds. Upper extent");
-
-                    for (int i = extents.row0; i < extents.row1; i++) {
-                        int index = i*mdst.numCols + extents.col0;
-                        for (int j = extents.col0; j < extents.col1; j++) {
-                            mdst.data[index++] = msrc;
+                    if( range.size() == 1 ) {
+                        if(extractSimpleExtents(range.get(0),extents,false,mdst.getNumElements())) {
+                            Arrays.fill(mdst.data,extents.col0,extents.col1+1,msrc);
+                        } else {
+                            extractArrayExtent(range.get(0),mdst.getNumElements(),colExtent);
+                            for (int i = 0; i < colExtent.length; i++) {
+                                mdst.data[colExtent.array[i]] = msrc;
+                            }
                         }
+                    } else if( range.size() == 2 ) {
+                        if(extractSimpleExtents(range.get(0),extents,true,mdst.getNumRows()) &&
+                                extractSimpleExtents(range.get(1),extents,false,mdst.getNumCols()) ) {
+
+                            extents.row1 += 1;
+                            extents.col1 += 1;
+
+                            for (int i = extents.row0; i < extents.row1; i++) {
+                                int index = i*mdst.numCols + extents.col0;
+                                for (int j = extents.col0; j < extents.col1; j++) {
+                                    mdst.data[index++] = msrc;
+                                }
+                            }
+                        } else {
+                            extractArrayExtent(range.get(0),mdst.numRows,rowExtent);
+                            extractArrayExtent(range.get(1),mdst.numCols,colExtent);
+
+                            for (int i = 0; i < rowExtent.length; i++) {
+                                for (int j = 0; j < colExtent.length; j++) {
+                                    mdst.unsafe_set(rowExtent.array[i],colExtent.array[j],msrc);
+                                }
+                            }
+                        }
+                    } else {
+                        throw new RuntimeException("Unexpected number of ranges.  Should have been caught earlier");
                     }
                 }
             };
@@ -801,7 +869,7 @@ public abstract class Operation {
                 @Override
                 public void process() {
                     VariableMatrix mA = (VariableMatrix)A;
-                    output.matrix.reshape(mA.matrix.numRows,mA.matrix.numCols);
+                    output.matrix.reshape(mA.matrix.numRows, mA.matrix.numCols);
                     if( !CommonOps.invert(mA.matrix,output.matrix) )
                         throw new RuntimeException("Inverse failed!");
                 }
@@ -1151,7 +1219,7 @@ public abstract class Operation {
                     int numRows = ((VariableInteger)A).value;
                     int numCols = ((VariableInteger)B).value;
                     output.matrix.reshape(numRows,numCols);
-                    CommonOps.fill(output.matrix,0);
+                    CommonOps.fill(output.matrix, 0);
                     //not sure if this is necessary.  Can its value every be modified?
                 }
             };
@@ -1177,7 +1245,7 @@ public abstract class Operation {
                     int numRows = ((VariableInteger)A).value;
                     int numCols = ((VariableInteger)B).value;
                     output.matrix.reshape(numRows,numCols);
-                    CommonOps.fill(output.matrix,1);
+                    CommonOps.fill(output.matrix, 1);
                 }
             };
         } else {
@@ -1283,24 +1351,87 @@ public abstract class Operation {
         if(  !(inputs.get(0) instanceof VariableMatrix))
             throw new RuntimeException("First parameter must be a matrix.");
 
+
         for (int i = 1; i < inputs.size(); i++) {
-            if( !(inputs.get(i) instanceof VariableInteger) && !(inputs.get(i) instanceof VariableSpecial) )
-                throw new RuntimeException("Last parameters must be integers or special for sub");
+            if( !(inputs.get(i) instanceof VariableInteger) &&
+                    (inputs.get(i).getType() != VariableType.INTEGER_SEQUENCE))
+                throw new RuntimeException("Parameters must be integers, integer list, or array range");
         }
 
         ret.op = new Operation("extract") {
 
             Extents extents = new Extents();
 
+            ArrayExtent rowExtent = new ArrayExtent();
+            ArrayExtent colExtent = new ArrayExtent();
+
             @Override
             public void process() {
 
                 DenseMatrix64F A = ((VariableMatrix)inputs.get(0)).matrix;
 
-                findExtents(A,inputs,1,extents);
+                if( inputs.size() == 2  ) {
+                    if( extractSimpleExtents(inputs.get(1), extents, false, A.getNumElements()) ) {
+                        extents.col1 += 1;
+                        output.matrix.reshape(1,extents.col1-extents.col0);
+                        System.arraycopy(A.data,extents.col0,output.matrix.data,0,extents.col1-extents.col0);
+                    } else {
+                        extractArrayExtent(inputs.get(1),A.getNumElements(),colExtent);
+                        output.matrix.reshape(1, colExtent.length);
+                        CommonOps.extract(A,
+                                colExtent.array, colExtent.length, output.matrix);
+                    }
+                } else if( extractSimpleExtents(inputs.get(1), extents, true, A.numRows) &&
+                        extractSimpleExtents(inputs.get(2), extents, false, A.numCols)) {
+                    extents.row1 += 1;
+                    extents.col1 += 1;
+                    output.matrix.reshape(extents.row1-extents.row0,extents.col1-extents.col0);
+                    CommonOps.extract(A,extents.row0,extents.row1,extents.col0,extents.col1,output.matrix,0,0);
+                } else {
+                    extractArrayExtent(inputs.get(1),A.numRows,rowExtent);
+                    extractArrayExtent(inputs.get(2),A.numCols,colExtent);
 
-                output.matrix.reshape(extents.row1-extents.row0,extents.col1-extents.col0);
-                CommonOps.extract(A,extents.row0,extents.row1,extents.col0,extents.col1,output.matrix,0,0);
+                    output.matrix.reshape(rowExtent.length, colExtent.length);
+                    CommonOps.extract(A,
+                            rowExtent.array,rowExtent.length,
+                            colExtent.array,colExtent.length,output.matrix);
+                }
+            }
+        };
+
+        return ret;
+    }
+
+    public static Info extractScalar( final List<Variable> inputs, ManagerTempVariables manager) {
+        Info ret = new Info();
+        final VariableDouble output = manager.createDouble();
+        ret.output = output;
+
+        if(  !(inputs.get(0) instanceof VariableMatrix))
+            throw new RuntimeException("First parameter must be a matrix.");
+
+        for (int i = 1; i < inputs.size(); i++) {
+            if( !(inputs.get(i) instanceof VariableInteger) )
+                throw new RuntimeException("Parameters must be integers for extract scalar");
+        }
+
+        ret.op = new Operation("extractScalar") {
+
+            @Override
+            public void process() {
+
+                DenseMatrix64F A = ((VariableMatrix)inputs.get(0)).matrix;
+
+                if( inputs.size() == 2 ) {
+                    int index = ((VariableInteger)inputs.get(1)).value;
+
+                    output.value = A.get(index);
+                } else {
+                    int row = ((VariableInteger) inputs.get(1)).value;
+                    int col = ((VariableInteger) inputs.get(2)).value;
+
+                    output.value = A.get(row, col);
+                }
             }
         };
 
@@ -1308,36 +1439,58 @@ public abstract class Operation {
     }
 
     /**
-     * Parses the inputs to figure out the range of a sub-matrix.  Special variables are handled to set
-     * relative values
+     * See if a simple sequence can be used to extract the array.  A simple extent is a continuous block from
+     * a min to max index
+     *
+     * @return true if it is a simple range or false if not
      */
-    protected static void findExtents( DenseMatrix64F A, List<Variable> inputs , int where ,Extents e ) {
-        if( inputs.get(where).getType() == VariableType.SPECIAL ) {
-            e.row0 = 0; e.row1 = A.numRows; where++;
-        } else {
-            e.row0 = ((VariableInteger)inputs.get(where++)).value;
-            if( inputs.get(where).getType() == VariableType.SPECIAL ) {
-                e.row1 = A.numRows;
+    private static boolean extractSimpleExtents(Variable var, Extents e, boolean row, int length) {
+        int lower;
+        int upper;
+        if( var.getType() == VariableType.INTEGER_SEQUENCE ) {
+            IntegerSequence sequence = ((VariableIntegerSequence)var).sequence;
+            if( sequence.getType() == IntegerSequence.Type.FOR ) {
+                IntegerSequence.For seqFor = (IntegerSequence.For)sequence;
+                seqFor.initialize(length);
+                if( seqFor.getStep() == 1 ) {
+                    lower = seqFor.getStart();
+                    upper = seqFor.getEnd();
+                } else {
+                    return false;
+                }
             } else {
-                e.row1 = ((VariableInteger)inputs.get(where)).value+1;
+                return false;
             }
-            where++;
-        }
-
-        if( inputs.get(where).getType() == VariableType.SPECIAL ) {
-            e.col0 = 0; e.col1 = A.numCols; where++;
+        } else if( var.getType() == VariableType.SCALAR ) {
+            lower = upper = ((VariableInteger)var).value;
         } else {
-            e.col0 = ((VariableInteger)inputs.get(where++)).value;
-            if( inputs.get(where).getType() == VariableType.SPECIAL ) {
-                e.col1 = A.numCols;
-            } else {
-                e.col1 = ((VariableInteger)inputs.get(where)).value+1;
-            }
-            where++;
+            throw new RuntimeException("How did a bad variable get put here?!?!");
         }
+        if( row ) {
+            e.row0 = lower;
+            e.row1 = upper;
+        } else {
+            e.col0 = lower;
+            e.col1 = upper;
+        }
+        return true;
+    }
 
-        if( where != inputs.size())
-            throw new RuntimeException("Unexpected number of inputs");
+    private static void extractArrayExtent( Variable var , int length , ArrayExtent extent ) {
+        if( var.getType() == VariableType.INTEGER_SEQUENCE ) {
+            IntegerSequence sequence = ((VariableIntegerSequence)var).sequence;
+            sequence.initialize(length-1);
+            extent.setLength(sequence.length());
+            int index = 0;
+            while( sequence.hasNext() ) {
+                extent.array[index++] = sequence.next();
+            }
+        } else if( var.getType() == VariableType.SCALAR ) {
+            extent.setLength(1);
+            extent.array[0] = ((VariableInteger)var).value;
+        } else {
+            throw new RuntimeException("How did a bad variable get put here?!?!");
+        }
     }
 
     public static Info matrixConstructor( final MatrixConstructor m ) {
@@ -1365,5 +1518,22 @@ public abstract class Operation {
     {
         public Operation op;
         public Variable output;
+    }
+
+    public static class ArrayExtent
+    {
+        int array[];
+        int length;
+
+        public ArrayExtent() {
+            array = new int[1];
+        }
+
+        public void setLength( int length ) {
+            if( length > array.length ) {
+                array = new int[ length ];
+            }
+            this.length = length;
+        }
     }
 }

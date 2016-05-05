@@ -2,9 +2,57 @@ Change log for EJML
 
 Date format: year/month/day
 
+----- Version 0.30
+
+- Thanks Peter Fodar for fixing misleading javadoc
+
+TODO look at sparse matrix contribution
+TODO equations support for boolean matrices and inequalities
+TODO Neural network back propagation example?
+
+----- Version 0.29
+
+2016/01/23
+
+- CommonOps
+  * Added extract with int[] for rows and columns or just indexes
+  * Added support for matrix element-wise inequality functions and boolean matrix
+    - This does go a little bit beyond the strict "linear algebra" only scope
+    - Primarily driven by adding features to Equations
+- Equations
+  * Can now create vectors using integer sequences
+    a = [5:10]
+    a = [ 2 3 4 0,-2, 4 ]
+
+    Commas are needed when using negative numbers or else it will think you're doing a-b instead of a and -b.
+
+  * Now now reference submatrices using integer sequences.  Works in 1D and 2D.
+    b = A(1 2 3 2 0 , 4: )   <-- 2D sub-matrix
+    c = A(4:3:20 3 4 5)      <-- reference elements by index in the sequence. c will be a row matrix
+
+  * Sub-matrix also works for assignment
+    d(3,5:) = f
+
+  * Added macros
+    Example: "macro m2m(a) = a*2*a"
+
+- Added DenseMatrixBool
+  * boolean matrix
+
+----- Version 0.28
+
+2015/07/09
+
+- Equations
+  * Fixed bug where bounds for a submatrix-scalar assignment was being checked using col,row instead of row,col
+    Thanks lenhhoxung for reporting this bug
+- FixedOps
+  * Added vector equivalents for all element-wise matrix operations
+  * Added multAdd operators
+
 ----- Version 0.27
 
-2014
+2015/04/01
 
 - Added SimpleMatrix.randomNormal() for drawing numbers from a normal distribution with zero mean
 - Added EjmlUnitTests.assertEquals() and similar for SimpleMatrix
@@ -13,11 +61,14 @@ Date format: year/month/day
 - Triangle quality now just uses diagonal elements to scale results
 - Support for complex matrices
   * Thanks IHMC (http://ihmc.us) for funding parts of this addition
-  * Most basic operations (e.g. multiplication, addition, ... etc)
-  * LU Decomposition
-  * QR Decomposition
+  * Basic operations (e.g. multiplication, addition, ... etc)
+  * LU Decomposition + Linear Solver
+  * QR Decomposition + Linear Solver
+  * Cholesky Decomposition + Linear Solver
   * Square Matrices: inverse, solve, determinant
   * Overdetermined: solve
+- ComplexMath64F
+  * Added sqrt(Complex64F)
 - Tweaked matrix inheritance to better support the addition of complex matrices
 - Added RandomMatrices setGaussian() and createGaussian()
 - Changed how SimpleMatrix computes its threshold for singular values
@@ -28,6 +79,18 @@ Date format: year/month/day
 - Added primitive 32bit data structures to make adding 32bit support in the future smoother
 - Equation
   * 1x1 matrix can be assigned to a double scalar
+  * When referencing a single element in a matrix it will be extracted as a scalar and not a 1x1 matrix.
+  * Added sqrt() to parser
+  * lookupDouble() will now work on 1x1 matrices
+- CommonOps
+  * Added dot(a,b) for dot product between two vectors
+  * Added extractRow and extractColumn
+- FixedOps
+  * Added extractRow and extractColumn.  Thanks nknize for inspiring this modification with a pull request
+  * Added subtract and subtractEquals.  Thanks nknize for the pull request
+- Added determinant to Cholesky decomposition interface
+- Added getDecomposition() to LinearSolver to provide access to internal classes,
+  which can be useful in some specialized cases.  Alternatives were very ugly.
 
 ----- Version 0.26
 

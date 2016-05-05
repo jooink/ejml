@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -20,6 +20,7 @@ package org.ejml.data;
 
 import org.ejml.EjmlParameters;
 import org.ejml.ops.EjmlUnitTests;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Random;
@@ -163,7 +164,9 @@ public class TestDenseMatrix32F {
     }
 
     @Test
+    @Ignore
     public void set_ColumnMajor() {
+        // todo implement later after basic 32bit operations are done
         fail("implement");
 //        DenseMatrix32F A = UtilTestMatrix.random32(3,5,-1,1,rand);
 //
@@ -176,7 +179,9 @@ public class TestDenseMatrix32F {
     }
 
     @Test
+    @Ignore
     public void set_RowMajor() {
+        // todo implement later after basic 32bit operations are done
         fail("implement");
 //        DenseMatrix32F A = UtilTestMatrix.random32(3, 5, -1, 1, rand);
 //

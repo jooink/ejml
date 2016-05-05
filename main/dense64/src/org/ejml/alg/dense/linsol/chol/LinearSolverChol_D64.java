@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -19,40 +19,38 @@
 package org.ejml.alg.dense.linsol.chol;
 
 import org.ejml.alg.dense.decomposition.TriangularSolver;
-import org.ejml.alg.dense.decomposition.chol.CholeskyDecompositionLDL_D64;
+import org.ejml.alg.dense.decomposition.chol.CholeskyDecompositionCommon_D64;
 import org.ejml.alg.dense.linsol.LinearSolverAbstract_D64;
 import org.ejml.data.DenseMatrix64F;
+import org.ejml.interfaces.decomposition.CholeskyDecomposition;
 import org.ejml.ops.SpecializedOps;
 
 
 /**
  * @author Peter Abeles
  */
-public class LinearSolverCholLDL extends LinearSolverAbstract_D64 {
+public class LinearSolverChol_D64 extends LinearSolverAbstract_D64 {
 
-    private CholeskyDecompositionLDL_D64 decomp;
-    private int n;
-    private double vv[];
-    private double el[];
-    private double d[];
+    CholeskyDecompositionCommon_D64 decomposer;
+    int n;
+    double vv[];
+    double t[];
 
-    public LinearSolverCholLDL( CholeskyDecompositionLDL_D64 decomp ) {
-        this.decomp = decomp;
-    }
-
-    public LinearSolverCholLDL() {
-        this.decomp = new CholeskyDecompositionLDL_D64();
+    public LinearSolverChol_D64(CholeskyDecompositionCommon_D64 decomposer) {
+        this.decomposer = decomposer;
     }
 
     @Override
     public boolean setA(DenseMatrix64F A) {
+        if( A.numRows != A.numCols )
+            throw new IllegalArgumentException("Matrix must be square");
+
         _setA(A);
 
-        if( decomp.decompose(A) ){
+        if( decomposer.decompose(A) ){
             n = A.numCols;
-            vv = decomp._getVV();
-            el = decomp.getL().data;
-            d = decomp.getDiagonal();
+            vv = decomposer._getVV();
+            t = decomposer.getT().data;
             return true;
         } else {
             return false;
@@ -61,7 +59,7 @@ public class LinearSolverCholLDL extends LinearSolverAbstract_D64 {
 
     @Override
     public double quality() {
-        return Math.abs(SpecializedOps.diagProd(decomp.getL()));
+        return SpecializedOps.qualityTriangular(decomposer.getT());
     }
 
     /**
@@ -81,7 +79,7 @@ public class LinearSolverCholLDL extends LinearSolverAbstract_D64 {
      */
     @Override
     public void solve( DenseMatrix64F B , DenseMatrix64F X ) {
-        if( B.numCols != X.numCols && B.numRows != n && X.numRows != n) {
+        if( B.numCols != X.numCols || B.numRows != n || X.numRows != n) {
             throw new IllegalArgumentException("Unexpected matrix size");
         }
 
@@ -90,27 +88,26 @@ public class LinearSolverCholLDL extends LinearSolverAbstract_D64 {
         double dataB[] = B.data;
         double dataX[] = X.data;
 
-        for( int j = 0; j < numCols; j++ ) {
-            for( int i = 0; i < n; i++ ) vv[i] = dataB[i*numCols+j];
-            solveInternal();
-            for( int i = 0; i < n; i++ ) dataX[i*numCols+j] = vv[i];
+        if(decomposer.isLower()) {
+            for( int j = 0; j < numCols; j++ ) {
+                for( int i = 0; i < n; i++ ) vv[i] = dataB[i*numCols+j];
+                solveInternalL();
+                for( int i = 0; i < n; i++ ) dataX[i*numCols+j] = vv[i];
+            }
+        } else {
+            throw new RuntimeException("Implement");
         }
     }
 
     /**
      * Used internally to find the solution to a single column vector.
      */
-    private void solveInternal() {
-        // solve L*s=b storing y in x
-        TriangularSolver.solveL(el,vv,n);
-
-        // solve D*y=s
-        for( int i = 0; i < n; i++ ) {
-            vv[i] /= d[i];
-        }
+    private void solveInternalL() {
+        // solve L*y=b storing y in x
+        TriangularSolver.solveL(t,vv,n);
 
         // solve L^T*x=y
-        TriangularSolver.solveTranL(el,vv,n);
+        TriangularSolver.solveTranL(t,vv,n);
     }
 
     /**
@@ -123,47 +120,64 @@ public class LinearSolverCholLDL extends LinearSolverAbstract_D64 {
         if( inv.numRows != n || inv.numCols != n ) {
             throw new RuntimeException("Unexpected matrix dimension");
         }
+        if( inv.data == t ) {
+            throw new IllegalArgumentException("Passing in the same matrix that was decomposed.");
+        }
 
         double a[] = inv.data;
 
-        // solve L*z = b
+        if(decomposer.isLower()) {
+            setToInverseL(a);
+        } else {
+            throw new RuntimeException("Implement");
+        }
+    }
+
+    /**
+     * Sets the matrix to the inverse using a lower triangular matrix.
+     */
+    public void setToInverseL( double a[] ) {
+        // TODO reorder these operations to avoid cache misses
+        
+        // inverts the lower triangular system and saves the result
+        // in the upper triangle to minimize cache misses
         for( int i =0; i < n; i++ ) {
+            double el_ii = t[i*n+i];
             for( int j = 0; j <= i; j++ ) {
-                double sum = (i==j) ? 1.0 : 0.0;
+                double sum = (i==j) ? 1.0 : 0;
                 for( int k=i-1; k >=j; k-- ) {
-                    sum -= el[i*n+k]*a[j*n+k];
+                    sum -= t[i*n+k]*a[j*n+k];
                 }
-                a[j*n+i] = sum;
+                a[j*n+i] = sum / el_ii;
             }
         }
-
-        // solve D*y=z
-        for( int i =0; i < n; i++ ) {
-            double inv_d = 1.0/d[i];
-            for( int j = 0; j <= i; j++ ) {
-                a[j*n+i] *= inv_d;
-            }
-        }
-
-        // solve L^T*x = y
+        // solve the system and handle the previous solution being in the upper triangle
+        // takes advantage of symmetry
         for( int i=n-1; i>=0; i-- ) {
+            double el_ii = t[i*n+i];
+
             for( int j = 0; j <= i; j++ ) {
                 double sum = (i<j) ? 0 : a[j*n+i];
                 for( int k=i+1;k<n;k++) {
-                    sum -= el[k*n+i]*a[j*n+k];
+                    sum -= t[k*n+i]*a[j*n+k];
                 }
-                a[i*n+j] = a[j*n+i] = sum;
+                a[i*n+j] = a[j*n+i] = sum / el_ii;
             }
         }
     }
 
     @Override
     public boolean modifiesA() {
-        return decomp.inputModified();
+        return decomposer.inputModified();
     }
 
     @Override
     public boolean modifiesB() {
         return false;
+    }
+
+    @Override
+    public CholeskyDecomposition<DenseMatrix64F> getDecomposition() {
+        return decomposer;
     }
 }

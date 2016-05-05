@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -22,10 +22,7 @@ import org.ejml.alg.dense.decomposition.lu.LUDecompositionAlt_D64;
 import org.ejml.alg.dense.linsol.lu.LinearSolverLu_D64;
 import org.ejml.alg.dense.mult.CheckMatrixMultShape;
 import org.ejml.alg.dense.mult.MatrixMatrixMult;
-import org.ejml.data.BlockMatrix64F;
-import org.ejml.data.DenseMatrix64F;
-import org.ejml.data.RowD1Matrix64F;
-import org.ejml.data.UtilTestMatrix;
+import org.ejml.data.*;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -269,15 +266,30 @@ public class TestCommonOps {
     }
 
     @Test
+    public void dot() {
+        DenseMatrix64F a = RandomMatrices.createRandom(10, 1, rand);
+        DenseMatrix64F b = RandomMatrices.createRandom(1,10,rand);
+
+        double found = CommonOps.dot(a, b);
+
+        double expected = 0;
+        for (int i = 0; i < 10; i++) {
+            expected += a.data[i]*b.data[i];
+        }
+
+        assertEquals(expected, found, 1e-8);
+    }
+
+    @Test
     public void multInner() {
         DenseMatrix64F a = RandomMatrices.createRandom(10,4,rand);
         DenseMatrix64F found = RandomMatrices.createRandom(4,4,rand);
-        DenseMatrix64F expected = RandomMatrices.createRandom(4,4,rand);
+        DenseMatrix64F expected = RandomMatrices.createRandom(4, 4, rand);
 
         CommonOps.multTransA(a, a, expected);
         CommonOps.multInner(a,found);
 
-        assertTrue(MatrixFeatures.isIdentical(expected,found,tol));
+        assertTrue(MatrixFeatures.isIdentical(expected, found, tol));
     }
 
     @Test
@@ -289,7 +301,7 @@ public class TestCommonOps {
         CommonOps.multTransB(a, a, expected);
         CommonOps.multOuter(a, found);
 
-        assertTrue(MatrixFeatures.isIdentical(expected,found,tol));
+        assertTrue(MatrixFeatures.isIdentical(expected, found, tol));
     }
     
     @Test
@@ -298,7 +310,7 @@ public class TestCommonOps {
         DenseMatrix64F b = RandomMatrices.createRandom(5,4,rand);
         DenseMatrix64F a_orig = a.copy();
 
-        CommonOps.elementMult(a,b);
+        CommonOps.elementMult(a, b);
 
         for( int i = 0; i < 20; i++ ) {
             assertEquals(a.get(i),b.get(i)*a_orig.get(i),1e-6);
@@ -309,9 +321,9 @@ public class TestCommonOps {
     public void elementMult_three() {
         DenseMatrix64F a = RandomMatrices.createRandom(5,4,rand);
         DenseMatrix64F b = RandomMatrices.createRandom(5,4,rand);
-        DenseMatrix64F c = RandomMatrices.createRandom(5,4,rand);
+        DenseMatrix64F c = RandomMatrices.createRandom(5, 4, rand);
 
-        CommonOps.elementMult(a,b,c);
+        CommonOps.elementMult(a, b, c);
 
         for( int i = 0; i < 20; i++ ) {
             assertEquals(c.get(i),b.get(i)*a.get(i),1e-6);
@@ -324,7 +336,7 @@ public class TestCommonOps {
         DenseMatrix64F b = RandomMatrices.createRandom(5,4,rand);
         DenseMatrix64F a_orig = a.copy();
 
-        CommonOps.elementDiv(a,b);
+        CommonOps.elementDiv(a, b);
 
         for( int i = 0; i < 20; i++ ) {
             assertEquals(a.get(i),a_orig.get(i)/b.get(i),1e-6);
@@ -335,9 +347,9 @@ public class TestCommonOps {
     public void elementDiv_three() {
         DenseMatrix64F a = RandomMatrices.createRandom(5,4,rand);
         DenseMatrix64F b = RandomMatrices.createRandom(5,4,rand);
-        DenseMatrix64F c = RandomMatrices.createRandom(5,4,rand);
+        DenseMatrix64F c = RandomMatrices.createRandom(5, 4, rand);
 
-        CommonOps.elementDiv(a,b,c);
+        CommonOps.elementDiv(a, b, c);
 
         for( int i = 0; i < 20; i++ ) {
             assertEquals(c.get(i),a.get(i)/b.get(i),1e-6);
@@ -356,9 +368,9 @@ public class TestCommonOps {
         LinearSolverLu_D64 solver = new LinearSolverLu_D64(alg);
         assertTrue(solver.setA(a));
 
-        solver.solve(b,c_exp);
+        solver.solve(b, c_exp);
 
-        EjmlUnitTests.assertEquals(c_exp,c,1e-8);
+        EjmlUnitTests.assertEquals(c_exp, c, 1e-8);
     }
 
     @Test
@@ -366,10 +378,10 @@ public class TestCommonOps {
         DenseMatrix64F mat = new DenseMatrix64F(3,3, true, 0, 1, 2, 3, 4, 5, 6, 7, 8);
         DenseMatrix64F matTran = new DenseMatrix64F(3,3);
 
-        CommonOps.transpose(mat,matTran);
+        CommonOps.transpose(mat, matTran);
         CommonOps.transpose(mat);
 
-        EjmlUnitTests.assertEquals(mat,matTran,1e-8);
+        EjmlUnitTests.assertEquals(mat, matTran, 1e-8);
     }
 
     @Test
@@ -379,8 +391,8 @@ public class TestCommonOps {
 
         CommonOps.transpose(mat,matTran);
 
-        assertEquals(mat.getNumCols(),matTran.getNumRows());
-        assertEquals(mat.getNumRows(),matTran.getNumCols());
+        assertEquals(mat.getNumCols(), matTran.getNumRows());
+        assertEquals(mat.getNumRows(), matTran.getNumCols());
 
         for( int y = 0; y < mat.getNumRows(); y++ ){
             for( int x = 0; x < mat.getNumCols(); x++ ) {
@@ -393,16 +405,16 @@ public class TestCommonOps {
     public void trace() {
         DenseMatrix64F mat = new DenseMatrix64F(3,3, true, 0, 1, 2, 3, 4, 5, 6, 7, 8);
 
-        assertEquals(12,CommonOps.trace(mat),1e-6);
+        assertEquals(12, CommonOps.trace(mat), 1e-6);
 
         // non square
         DenseMatrix64F B = RandomMatrices.createRandom(4,3,rand);
-        CommonOps.insert(mat,B,0,0);
-        assertEquals(12,CommonOps.trace(B),1e-6);
+        CommonOps.insert(mat, B, 0, 0);
+        assertEquals(12, CommonOps.trace(B), 1e-6);
 
         B = RandomMatrices.createRandom(3,4,rand);
-        CommonOps.insert(mat,B,0,0);
-        assertEquals(12,CommonOps.trace(B),1e-6);
+        CommonOps.insert(mat, B, 0, 0);
+        assertEquals(12, CommonOps.trace(B), 1e-6);
 
     }
 
@@ -422,8 +434,8 @@ public class TestCommonOps {
             CommonOps.invert(a,a_inv);
             CommonOps.invert(a);
 
-            EjmlUnitTests.assertEquals(a,a_inv,1e-8);
-            EjmlUnitTests.assertEquals(a_lu,a,1e-8);
+            EjmlUnitTests.assertEquals(a, a_inv, 1e-8);
+            EjmlUnitTests.assertEquals(a_lu, a, 1e-8);
         }
     }
 
@@ -462,7 +474,7 @@ public class TestCommonOps {
 
     @Test
     public void columnsToVectors() {
-        DenseMatrix64F M = RandomMatrices.createRandom(4,5,rand);
+        DenseMatrix64F M = RandomMatrices.createRandom(4, 5, rand);
 
         DenseMatrix64F v[] = CommonOps.columnsToVector(M, null);
 
@@ -492,7 +504,7 @@ public class TestCommonOps {
 
     @Test
     public void identity_rect() {
-        DenseMatrix64F A = CommonOps.identity(4,6);
+        DenseMatrix64F A = CommonOps.identity(4, 6);
 
         assertEquals(4,A.numRows);
         assertEquals(6,A.numCols);
@@ -502,7 +514,7 @@ public class TestCommonOps {
 
     @Test
     public void setIdentity() {
-        DenseMatrix64F A = RandomMatrices.createRandom(4,4,rand);
+        DenseMatrix64F A = RandomMatrices.createRandom(4, 4, rand);
 
         CommonOps.setIdentity(A);
 
@@ -514,22 +526,22 @@ public class TestCommonOps {
 
     @Test
     public void diag() {
-        DenseMatrix64F A = CommonOps.diag(2.0,3.0,6.0,7.0);
+        DenseMatrix64F A = CommonOps.diag(2.0, 3.0, 6.0, 7.0);
 
         assertEquals(4,A.numRows);
         assertEquals(4,A.numCols);
 
         assertEquals(2,A.get(0,0),1e-8);
-        assertEquals(3,A.get(1,1),1e-8);
-        assertEquals(6,A.get(2,2),1e-8);
-        assertEquals(7,A.get(3,3),1e-8);
+        assertEquals(3, A.get(1, 1), 1e-8);
+        assertEquals(6, A.get(2, 2), 1e-8);
+        assertEquals(7, A.get(3, 3), 1e-8);
 
         assertEquals(18,CommonOps.elementSum(A),1e-8);
     }
 
     @Test
     public void diag_rect() {
-        DenseMatrix64F A = CommonOps.diagR(4,6,2.0,3.0,6.0,7.0);
+        DenseMatrix64F A = CommonOps.diagR(4, 6, 2.0, 3.0, 6.0, 7.0);
 
         assertEquals(4,A.numRows);
         assertEquals(6,A.numCols);
@@ -539,7 +551,7 @@ public class TestCommonOps {
         assertEquals(6,A.get(2,2),1e-8);
         assertEquals(7,A.get(3,3),1e-8);
 
-        assertEquals(18,CommonOps.elementSum(A),1e-8);
+        assertEquals(18, CommonOps.elementSum(A), 1e-8);
     }
 
     @Test
@@ -550,9 +562,9 @@ public class TestCommonOps {
         DenseMatrix64F C = new DenseMatrix64F(2,4);
         DenseMatrix64F C_expected = new DenseMatrix64F(2,4, true, 4, 5, 8, 10, 12, 15, 16, 20);
 
-        CommonOps.kron(A,B,C);
+        CommonOps.kron(A, B, C);
 
-        assertTrue(MatrixFeatures.isIdentical(C,C_expected,1e-8));
+        assertTrue(MatrixFeatures.isIdentical(C, C_expected, 1e-8));
 
         // test various shapes for problems
         for( int i = 1; i <= 3; i++ ) {
@@ -579,7 +591,7 @@ public class TestCommonOps {
 
         DenseMatrix64F B = new DenseMatrix64F(2,3);
 
-        CommonOps.extract(A,1,3,2,5,B,0,0);
+        CommonOps.extract(A, 1, 3, 2, 5, B, 0, 0);
 
         for( int i = 1; i < 3; i++ ) {
             for( int j = 2; j < 5; j++ ) {
@@ -595,11 +607,74 @@ public class TestCommonOps {
         DenseMatrix64F B = CommonOps.extract(A,1,3,2,5);
 
         assertEquals(B.numRows,2);
-        assertEquals(B.numCols,3);
+        assertEquals(B.numCols, 3);
 
         for( int i = 1; i < 3; i++ ) {
             for( int j = 2; j < 5; j++ ) {
                 assertEquals(A.get(i,j),B.get(i-1,j-2),1e-8);
+            }
+        }
+    }
+
+    @Test
+    public void extract_array_two() {
+        DenseMatrix64F A = RandomMatrices.createRandom(5,5, 0, 1, rand);
+
+        int rows[] = new int[6];
+        rows[0] = 2;
+        rows[1] = 4;
+
+        int cols[] = new int[4];
+        cols[0] = 1;
+        DenseMatrix64F B = new DenseMatrix64F(2,1);
+        CommonOps.extract(A,rows,2,cols,1,B);
+
+        assertEquals(B.numRows,2);
+        assertEquals(B.numCols, 1);
+
+        for( int i = 0; i < 2; i++ ) {
+            for( int j = 0; j < 1; j++ ) {
+                assertEquals(A.get(rows[i],cols[j]),B.get(i,j),1e-8);
+            }
+        }
+    }
+
+    @Test
+    public void extract_array_one() {
+        DenseMatrix64F A = RandomMatrices.createRandom(5,5, 0, 1, rand);
+
+        int indexes[] = new int[6];
+        indexes[0] = 2;
+        indexes[1] = 4;
+
+        DenseMatrix64F B = new DenseMatrix64F(2,1);
+        CommonOps.extract(A,indexes,2,B);
+
+        assertEquals(B.numRows,2);
+        assertEquals(B.numCols, 1);
+
+        for( int i = 0; i < 2; i++ ) {
+            assertEquals(A.get(indexes[i]),B.get(i),1e-8);
+        }
+    }
+
+    @Test
+    public void insert_array_two() {
+        DenseMatrix64F A = RandomMatrices.createRandom(2,1, 0, 1, rand);
+
+        int rows[] = new int[6];
+        rows[0] = 2;
+        rows[1] = 4;
+
+        int cols[] = new int[4];
+        cols[0] = 1;
+        DenseMatrix64F B = new DenseMatrix64F(5,5);
+        CommonOps.insert(A, B, rows, 2, cols, 1);
+
+
+        for( int i = 0; i < 2; i++ ) {
+            for( int j = 0; j < 1; j++ ) {
+                assertEquals(A.get(i,j),B.get(rows[i],cols[j]),1e-8);
             }
         }
     }
@@ -613,10 +688,38 @@ public class TestCommonOps {
         }
 
         DenseMatrix64F v = new DenseMatrix64F(3,1);
-        CommonOps.extractDiag(a,v);
+        CommonOps.extractDiag(a, v);
 
         for( int i = 0; i < 3; i++ ) {
             assertEquals( i+1 , v.get(i) , 1e-8 );
+        }
+    }
+
+    @Test
+    public void extractRow() {
+        DenseMatrix64F A = RandomMatrices.createRandom(5,6, 0, 1, rand);
+
+        DenseMatrix64F B = CommonOps.extractRow(A, 3, null);
+
+        assertEquals(B.numRows,1);
+        assertEquals(B.numCols, 6);
+
+        for( int i = 0; i < 6; i++ ) {
+            assertEquals(A.get(3,i),B.get(0,i),1e-8);
+        }
+    }
+
+    @Test
+    public void extractColumn() {
+        DenseMatrix64F A = RandomMatrices.createRandom(5,6, 0, 1, rand);
+
+        DenseMatrix64F B = CommonOps.extractColumn(A, 3, null);
+
+        assertEquals(B.numRows, 5);
+        assertEquals(B.numCols, 1);
+
+        for( int i = 0; i < 5; i++ ) {
+            assertEquals(A.get(i,3),B.get(i,0),1e-8);
         }
     }
 
@@ -631,7 +734,7 @@ public class TestCommonOps {
 
         DenseMatrix64F B = new DenseMatrix64F(8,8);
 
-        CommonOps.insert(A, B, 1,2);
+        CommonOps.insert(A, B, 1, 2);
 
         for( int i = 1; i < 6; i++ ) {
             for( int j = 2; j < 7; j++ ) {
@@ -645,10 +748,10 @@ public class TestCommonOps {
         DenseMatrix64F a = new DenseMatrix64F(2,3, true, 0, 1, 2, 3, 4, 5);
         DenseMatrix64F b = new DenseMatrix64F(2,3, true, 5, 4, 3, 2, 1, 0);
 
-        CommonOps.addEquals(a,b);
+        CommonOps.addEquals(a, b);
 
         UtilTestMatrix.checkMat(a,5,5,5,5,5,5);
-        UtilTestMatrix.checkMat(b,5,4,3,2,1,0);
+        UtilTestMatrix.checkMat(b, 5, 4, 3, 2, 1, 0);
     }
 
     @Test
@@ -656,7 +759,7 @@ public class TestCommonOps {
         DenseMatrix64F a = new DenseMatrix64F(2,3, true, 0, 1, 2, 3, 4, 5);
         DenseMatrix64F b = new DenseMatrix64F(2,3, true, 5, 4, 3, 2, 1, 0);
 
-        CommonOps.addEquals(a,2.0,b);
+        CommonOps.addEquals(a, 2.0, b);
 
         UtilTestMatrix.checkMat(a,10,9,8,7,6,5);
         UtilTestMatrix.checkMat(b,5,4,3,2,1,0);
@@ -670,7 +773,7 @@ public class TestCommonOps {
 
         CommonOps.add(a,b,c);
 
-        UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
+        UtilTestMatrix.checkMat(a, 0, 1, 2, 3, 4, 5);
         UtilTestMatrix.checkMat(b,5,4,3,2,1,0);
         UtilTestMatrix.checkMat(c,5,5,5,5,5,5);
     }
@@ -696,7 +799,7 @@ public class TestCommonOps {
 
         CommonOps.add(2.0,a,2.0,b,c);
 
-        UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
+        UtilTestMatrix.checkMat(a, 0, 1, 2, 3, 4, 5);
         UtilTestMatrix.checkMat(b,5,4,3,2,1,0);
         UtilTestMatrix.checkMat(c,10,10,10,10,10,10);
     }
@@ -710,7 +813,7 @@ public class TestCommonOps {
         CommonOps.add(2.0,a,b,c);
 
         UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
-        UtilTestMatrix.checkMat(b,5,4,3,2,1,0);
+        UtilTestMatrix.checkMat(b, 5, 4, 3, 2, 1, 0);
         UtilTestMatrix.checkMat(c,5,6,7,8,9,10);
     }
 
@@ -719,7 +822,7 @@ public class TestCommonOps {
         DenseMatrix64F a = new DenseMatrix64F(2,3, true, 0, 1, 2, 3, 4, 5);
         DenseMatrix64F c = RandomMatrices.createRandom(2,3,rand);
 
-        CommonOps.add(a,2.0,c);
+        CommonOps.add(a, 2.0, c);
 
         UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
         UtilTestMatrix.checkMat(c,2,3,4,5,6,7);
@@ -729,7 +832,7 @@ public class TestCommonOps {
     public void add_scalar() {
         DenseMatrix64F a = new DenseMatrix64F(2,3, true, 0, 1, 2, 3, 4, 5);
 
-        CommonOps.add(a,2.0);
+        CommonOps.add(a, 2.0);
 
         UtilTestMatrix.checkMat(a,2,3,4,5,6,7);
     }
@@ -741,7 +844,7 @@ public class TestCommonOps {
 
         CommonOps.subtractEquals(a, b);
 
-        UtilTestMatrix.checkMat(a,-5,-4,-3,-2,-1,0);
+        UtilTestMatrix.checkMat(a, -5, -4, -3, -2, -1, 0);
         UtilTestMatrix.checkMat(b,5,5,5,5,5,5);
     }
 
@@ -753,7 +856,7 @@ public class TestCommonOps {
 
         CommonOps.subtract(a, b, c);
 
-        UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
+        UtilTestMatrix.checkMat(a, 0, 1, 2, 3, 4, 5);
         UtilTestMatrix.checkMat(b,5,5,5,5,5,5);
         UtilTestMatrix.checkMat(c,-5,-4,-3,-2,-1,0);
     }
@@ -765,8 +868,8 @@ public class TestCommonOps {
 
         CommonOps.subtract(a, 2, c);
 
-        UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
-        UtilTestMatrix.checkMat(c,-2,-1,0,1,2,3);
+        UtilTestMatrix.checkMat(a, 0, 1, 2, 3, 4, 5);
+        UtilTestMatrix.checkMat(c, -2, -1, 0, 1, 2, 3);
     }
 
     @Test
@@ -776,8 +879,8 @@ public class TestCommonOps {
 
         CommonOps.subtract(2, a, c);
 
-        UtilTestMatrix.checkMat(a,0,1,2,3,4,5);
-        UtilTestMatrix.checkMat(c,2,1,0,-1,-2,-3);
+        UtilTestMatrix.checkMat(a, 0, 1, 2, 3, 4, 5);
+        UtilTestMatrix.checkMat(c, 2, 1, 0, -1, -2, -3);
     }
 
     @Test
@@ -786,12 +889,12 @@ public class TestCommonOps {
         double d[] = new double[]{10,12.5,-2,5.5};
         DenseMatrix64F mat = new DenseMatrix64F(2,2, true, d);
 
-        CommonOps.scale(s,mat);
+        CommonOps.scale(s, mat);
 
         assertEquals(d[0]*s,mat.get(0,0),1e-8);
-        assertEquals(d[1]*s,mat.get(0,1),1e-8);
-        assertEquals(d[2]*s,mat.get(1,0),1e-8);
-        assertEquals(d[3]*s,mat.get(1,1),1e-8);
+        assertEquals(d[1] * s, mat.get(0, 1), 1e-8);
+        assertEquals(d[2] * s, mat.get(1, 0), 1e-8);
+        assertEquals(d[3] * s, mat.get(1, 1), 1e-8);
     }
 
     @Test
@@ -806,7 +909,7 @@ public class TestCommonOps {
         assertEquals(d[0],mat.get(0,0),1e-8);
         assertEquals(d[1],mat.get(0,1),1e-8);
         assertEquals(d[2],mat.get(1,0),1e-8);
-        assertEquals(d[3],mat.get(1,1),1e-8);
+        assertEquals(d[3], mat.get(1, 1), 1e-8);
 
         assertEquals(d[0]*s,r.get(0,0),1e-8);
         assertEquals(d[1]*s,r.get(0,1),1e-8);
@@ -820,7 +923,7 @@ public class TestCommonOps {
         double d[] = new double[]{10,12.5,-2,5.5};
         DenseMatrix64F mat = new DenseMatrix64F(2,2, true, d);
 
-        CommonOps.divide(s,mat);
+        CommonOps.divide(s, mat);
 
         assertEquals(s/d[0],mat.get(0,0),1e-8);
         assertEquals(s/d[1],mat.get(0,1),1e-8);
@@ -834,7 +937,7 @@ public class TestCommonOps {
         double d[] = new double[]{10,12.5,-2,5.5};
         DenseMatrix64F mat = new DenseMatrix64F(2,2, true, d);
 
-        CommonOps.divide(mat,s);
+        CommonOps.divide(mat, s);
 
         assertEquals(mat.get(0,0),d[0]/s,1e-8);
         assertEquals(mat.get(0,1),d[1]/s,1e-8);
@@ -854,12 +957,12 @@ public class TestCommonOps {
         assertEquals(d[0],mat.get(0,0),1e-8);
         assertEquals(d[1],mat.get(0,1),1e-8);
         assertEquals(d[2],mat.get(1,0),1e-8);
-        assertEquals(d[3],mat.get(1,1),1e-8);
+        assertEquals(d[3], mat.get(1, 1), 1e-8);
 
         assertEquals(d[0]/s,r.get(0,0),1e-8);
         assertEquals(d[1]/s,r.get(0,1),1e-8);
         assertEquals(d[2]/s,r.get(1,0),1e-8);
-        assertEquals(d[3]/s,r.get(1,1),1e-8);
+        assertEquals(d[3] / s, r.get(1, 1), 1e-8);
     }
 
     @Test
@@ -879,7 +982,7 @@ public class TestCommonOps {
         assertEquals(s/d[0],r.get(0,0),1e-8);
         assertEquals(s/d[1],r.get(0,1),1e-8);
         assertEquals(s/d[2],r.get(1,0),1e-8);
-        assertEquals(s/d[3],r.get(1,1),1e-8);
+        assertEquals(s / d[3], r.get(1, 1), 1e-8);
     }
 
     @Test
@@ -897,9 +1000,9 @@ public class TestCommonOps {
     @Test
     public void changeSign_two() {
         DenseMatrix64F A = RandomMatrices.createRandom(2,3,rand);
-        DenseMatrix64F B = RandomMatrices.createRandom(2,3,rand);
+        DenseMatrix64F B = RandomMatrices.createRandom(2, 3, rand);
 
-        CommonOps.changeSign(A,B);
+        CommonOps.changeSign(A, B);
 
         for (int i = 0; i < A.getNumElements(); i++) {
             assertEquals(A.get(i),-B.get(i),1e-8);
@@ -947,7 +1050,7 @@ public class TestCommonOps {
         DenseMatrix64F mat = new DenseMatrix64F(3,3, true, 0, 1, -2, 3, 4, 5, 6, 7, -8);
 
         double m = CommonOps.elementMax(mat);
-        assertEquals(7,m,1e-8);
+        assertEquals(7, m, 1e-8);
     }
 
     @Test
@@ -979,7 +1082,7 @@ public class TestCommonOps {
         DenseMatrix64F M = RandomMatrices.createRandom(5,5,rand);
         // make it smaller than the original size to make sure it is bounding
         // the summation correctly
-        M.reshape(4,3, false);
+        M.reshape(4, 3, false);
 
         double sum = 0;
         for( int i = 0; i < M.numRows; i++ ) {
@@ -996,12 +1099,12 @@ public class TestCommonOps {
         DenseMatrix64F M = RandomMatrices.createRandom(5,5,rand);
         // make it smaller than the original size to make sure it is bounding
         // the summation correctly
-        M.reshape(4,3, false);
+        M.reshape(4, 3, false);
 
         double sum = 0;
         for( int i = 0; i < M.numRows; i++ ) {
             for( int j = 0; j < M.numCols; j++ ) {
-                sum += Math.abs(M.get(i,j));
+                sum += Math.abs(M.get(i, j));
             }
         }
 
@@ -1028,10 +1131,10 @@ public class TestCommonOps {
         DenseMatrix64F B = RandomMatrices.createRandom(4, 5, rand);
         DenseMatrix64F C = RandomMatrices.createRandom(4, 5, rand);
 
-        CommonOps.elementPower(a,B,C);
+        CommonOps.elementPower(a, B, C);
 
         for (int i = 0; i < C.getNumElements(); i++) {
-            double expected = Math.pow( a , B.get(i));
+            double expected = Math.pow(a, B.get(i));
             assertEquals(expected,C.get(i),1e-8);
         }
     }
@@ -1042,10 +1145,10 @@ public class TestCommonOps {
         double b = 1.1;
         DenseMatrix64F C = RandomMatrices.createRandom(4, 5, rand);
 
-        CommonOps.elementPower(A,b,C);
+        CommonOps.elementPower(A, b, C);
 
         for (int i = 0; i < A.getNumElements(); i++) {
-            double expected = Math.pow( A.get(i) , b);
+            double expected = Math.pow(A.get(i), b);
             assertEquals(expected,C.get(i),1e-8);
         }
     }
@@ -1092,9 +1195,9 @@ public class TestCommonOps {
         }
 
         // check with a null output
-        DenseMatrix64F output2 = CommonOps.sumRows(input,null);
+        DenseMatrix64F output2 = CommonOps.sumRows(input, null);
 
-        EjmlUnitTests.assertEquals(output,output2,1e-8);
+        EjmlUnitTests.assertEquals(output, output2, 1e-8);
     }
 
     @Test
@@ -1102,7 +1205,7 @@ public class TestCommonOps {
         DenseMatrix64F input = RandomMatrices.createRandom(4,5,rand);
         DenseMatrix64F output = new DenseMatrix64F(1,5);
 
-        assertTrue( output == CommonOps.sumCols(input,output));
+        assertTrue( output == CommonOps.sumCols(input, output));
 
         for( int i = 0; i < input.numCols; i++ ) {
             double total = 0;
@@ -1113,9 +1216,9 @@ public class TestCommonOps {
         }
 
         // check with a null output
-        DenseMatrix64F output2 = CommonOps.sumCols(input,null);
+        DenseMatrix64F output2 = CommonOps.sumCols(input, null);
 
-        EjmlUnitTests.assertEquals(output,output2,1e-8);
+        EjmlUnitTests.assertEquals(output, output2, 1e-8);
     }
 
     @Test
@@ -1132,9 +1235,148 @@ public class TestCommonOps {
                 0,0,0,0,1,-2,
                 0,0,0,0,0,0);
 
-        DenseMatrix64F found = CommonOps.rref(A,5, null);
+        DenseMatrix64F found = CommonOps.rref(A, 5, null);
 
 
-        assertTrue(MatrixFeatures.isEquals(found,expected));
+        assertTrue(MatrixFeatures.isEquals(found, expected));
+    }
+
+    @Test
+    public void elementLessThan_double() {
+        DenseMatrix64F A = new DenseMatrix64F(3,4);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        double value = 5.0;
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            A.data[i] = i;
+            expected.data[i] = i < value;
+        }
+
+        CommonOps.elementLessThan(A, value, found);
+        assertTrue(MatrixFeatures.isEquals(expected,found));
+    }
+
+    @Test
+    public void elementLessThanOrEqual_double() {
+        DenseMatrix64F A = new DenseMatrix64F(3,4);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        double value = 5.0;
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            A.data[i] = i;
+            expected.data[i] = i <= value;
+        }
+
+        CommonOps.elementLessThanOrEqual(A, value, found);
+        assertTrue(MatrixFeatures.isEquals(expected, found));
+    }
+
+    @Test
+    public void elementMoreThan_double() {
+        DenseMatrix64F A = new DenseMatrix64F(3,4);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        double value = 5.0;
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            A.data[i] = i;
+            expected.data[i] = i > value;
+        }
+
+        CommonOps.elementMoreThan(A, value, found);
+        assertTrue(MatrixFeatures.isEquals(expected, found));
+    }
+
+    @Test
+    public void elementMoreThanOrEqual_double() {
+        DenseMatrix64F A = new DenseMatrix64F(3,4);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        double value = 5.0;
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            A.data[i] = i;
+            expected.data[i] = i >= value;
+        }
+
+        CommonOps.elementMoreThanOrEqual(A, value, found);
+        assertTrue(MatrixFeatures.isEquals(expected, found));
+    }
+
+    @Test
+    public void elementLessThan_matrix() {
+        DenseMatrix64F A = RandomMatrices.createRandom(3,4,rand);
+        DenseMatrix64F B = RandomMatrices.createRandom(3,4,rand);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        A.data[6] = B.data[6];
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            expected.data[i] = A.data[i] < B.data[i];
+        }
+
+        CommonOps.elementLessThan(A, B, found);
+        assertTrue(MatrixFeatures.isEquals(expected, found));
+    }
+
+    @Test
+    public void elementLessThanOrEqual_matrix() {
+        DenseMatrix64F A = RandomMatrices.createRandom(3,4,rand);
+        DenseMatrix64F B = RandomMatrices.createRandom(3,4,rand);
+        DenseMatrixBool expected = new DenseMatrixBool(3,4);
+        DenseMatrixBool found = new DenseMatrixBool(3,4);
+
+        A.data[6] = B.data[6];
+
+        for (int i = 0; i < A.getNumElements() ; i++) {
+            expected.data[i] = A.data[i] <= B.data[i];
+        }
+
+        CommonOps.elementLessThanOrEqual(A, B, found);
+        assertTrue(MatrixFeatures.isEquals(expected, found));
+    }
+
+    @Test
+    public void elements() {
+        DenseMatrix64F A = RandomMatrices.createRandom(3,4,rand);
+
+        DenseMatrixBool B = RandomMatrices.createRandomB(3, 4, rand);
+
+        DenseMatrix64F found = CommonOps.elements(A, B, null);
+
+        int index = 0;
+
+        for (int i = 0; i < B.getNumElements(); i++) {
+            if( B.get(i) ) {
+                assertEquals(found.get(index++),A.get(i),1e-8);
+            }
+        }
+
+        assertEquals(index,found.getNumRows());
+        assertEquals(1,found.getNumCols());
+    }
+
+    @Test
+    public void countTrue() {
+        DenseMatrixBool B = RandomMatrices.createRandomB(4, 5, rand);
+
+
+        int index = 0;
+
+        for (int i = 0; i < B.getNumElements(); i++) {
+            if( B.get(i) ) {
+                index++;
+            }
+        }
+
+        assertTrue(index>5);
+        assertEquals(index, CommonOps.countTrue(B));
     }
 }

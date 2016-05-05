@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, Peter Abeles. All Rights Reserved.
+ * Copyright (c) 2009-2015, Peter Abeles. All Rights Reserved.
  *
  * This file is part of Efficient Java Matrix Library (EJML).
  *
@@ -212,6 +212,23 @@ class TokenList {
     }
 
     /**
+     * Inserts the LokenList immediately following the 'before' token
+     */
+    public void insertAfter(Token before, TokenList list ) {
+        Token after = before.next;
+
+        before.next = list.first;
+        list.first.previous = before;
+        if( after == null ) {
+            last = list.last;
+        } else {
+            after.previous = list.last;
+            list.last.next = after;
+        }
+        size += list.size;
+    }
+
+    /**
      * Prints the list of tokens
      */
     public String toString() {
@@ -272,16 +289,15 @@ class TokenList {
             this.variable = variable;
         }
 
-        public Token(VariableSpecial.Special special) {
-            this.variable = new VariableSpecial(special);
-        }
-
         public Token(Symbol symbol) {
             this.symbol = symbol;
         }
 
         public Token(String word) {
             this.word = word;
+        }
+
+        public Token() {
         }
 
         public Type getType() {
@@ -311,6 +327,17 @@ class TokenList {
             return word;
         }
 
+        /**
+         * If a scalar variable it returns its type, otherwise null
+         */
+        public VariableScalar.Type getScalarType() {
+            if( variable != null )
+                if( variable.getType() == VariableType.SCALAR ) {
+                    return ((VariableScalar)variable).getScalarType();
+                }
+            return null;
+        }
+
         public String toString() {
             switch( getType() ) {
                 case FUNCTION:
@@ -323,6 +350,16 @@ class TokenList {
                     return "Word:"+word;
             }
             throw new RuntimeException("Unknown type");
+        }
+
+        public Token copy() {
+            Token t = new Token();
+            t.word = word;
+            t.function = function;
+            t.symbol = symbol;
+            t.variable = variable;
+
+            return t;
         }
     }
 
