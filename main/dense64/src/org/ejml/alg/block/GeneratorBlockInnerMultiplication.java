@@ -22,6 +22,7 @@ import org.ejml.alg.generic.CodeGeneratorMisc;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 
 /**
@@ -34,7 +35,7 @@ public class GeneratorBlockInnerMultiplication {
 
     public GeneratorBlockInnerMultiplication( String className ) throws FileNotFoundException {
         this.className = className;
-        stream = new PrintStream(className+".java");
+        stream = new PrintStream(new FileOutputStream(className+".java"));
     }
 
     public void createClass() {
